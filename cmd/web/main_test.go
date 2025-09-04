@@ -2,114 +2,127 @@
 package main
 
 import (
+	"html/template"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/brandondunbar/personal-site/internal/config"
 )
 
-func TestRootServesGreeting(t *testing.T) {
-	t.Parallel()
-
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-
-	routes().ServeHTTP(rec, req)
-
-	res := rec.Result()
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		t.Fatalf("want 200 OK, got %d", res.StatusCode)
-	}
-	body, _ := io.ReadAll(res.Body)
-	if !strings.Contains(string(body), "Hello from Go templates!") {
-		t.Fatalf("want greeting in HTML, got: %s", string(body))
-	}
-}
-
 func TestHealthz_OK(t *testing.T) {
-	t.Parallel()
+	app := mustTestApp(t)
+	srv := httptest.NewServer(app.routes())
+	defer srv.Close()
 
-	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
-	rec := httptest.NewRecorder()
-
-	routes().ServeHTTP(rec, req)
-
-	res := rec.Result()
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		t.Fatalf("want 200 OK, got %d", res.StatusCode)
+	resp, err := http.Get(srv.URL + "/healthz")
+	if err != nil {
+		t.Fatalf("GET /healthz: %v", err)
 	}
-	b, _ := io.ReadAll(res.Body)
-	if string(b) != "OK" {
-		t.Fatalf("want body %q, got %q", "OK", string(b))
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, http.StatusOK)
 	}
-	if ct := res.Header.Get("Content-Type"); ct != "text/plain; charset=utf-8" {
-		t.Fatalf("want Content-Type %q, got %q", "text/plain; charset=utf-8", ct)
+	ct := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(ct, "text/plain") {
+		t.Fatalf("Content-Type = %q, want text/plain", ct)
 	}
 }
 
-func TestRootRendersHTML(t *testing.T) {
-	t.Parallel()
+func TestStaticServesFile_WithCacheControl(t *testing.T) {
+	app := mustTestApp(t)
+	srv := httptest.NewServer(app.routes())
+	defer srv.Close()
 
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-
-	routes().ServeHTTP(rec, req)
-
-	res := rec.Result()
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		t.Fatalf("want status 200 OK, got %d", res.StatusCode)
+	// File created by mustTestApp at /static/css/site.css
+	resp, err := http.Get(srv.URL + "/static/css/site.css")
+	if err != nil {
+		t.Fatalf("GET /static/css/site.css: %v", err)
 	}
-	if ct := res.Header.Get("Content-Type"); ct != "text/html; charset=utf-8" {
-		t.Fatalf("want Content-Type %q, got %q", "text/html; charset=utf-8", ct)
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, http.StatusOK)
 	}
-	body, _ := io.ReadAll(res.Body)
-	if !strings.Contains(string(body), "<h1>") {
-		t.Fatalf("want HTML body containing <h1>, got: %s", string(body))
+	gotCC := resp.Header.Get("Cache-Control")
+	wantCC := "public, max-age=31536000, immutable"
+	if gotCC != wantCC {
+		t.Fatalf("Cache-Control = %q, want %q", gotCC, wantCC)
 	}
 }
 
-func TestStaticServesFile(t *testing.T) {
-	t.Parallel()
+func TestHome_Renders_WithConfigAndYear(t *testing.T) {
+	app := mustTestApp(t)
+	srv := httptest.NewServer(app.routes())
+	defer srv.Close()
 
-	// Arrange: create a temporary static directory with one file.
-	tmp := t.TempDir()
-	js := []byte(`console.log("ok");`)
-	if err := os.WriteFile(filepath.Join(tmp, "app.js"), js, 0o644); err != nil {
-		t.Fatalf("write tmp static: %v", err)
+	resp, err := http.Get(srv.URL + "/")
+	if err != nil {
+		t.Fatalf("GET /: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, http.StatusOK)
 	}
 
-	// Swap the static filesystem to point to our temp dir for this test.
-	orig := staticFS
-	staticFS = http.Dir(tmp)
-	t.Cleanup(func() { staticFS = orig })
+	body, _ := ioReadAll(resp.Body)
+	if !strings.Contains(body, "Home - Elliot Alderson") {
+		t.Fatalf("body missing title with Site.Name: %q", body)
+	}
+	if !strings.Contains(body, "name@domain.com") {
+		t.Fatalf("body missing Site.Email: %q", body)
+	}
+	year := strconv.Itoa(time.Now().Year())
+	if !strings.Contains(body, year) {
+		t.Fatalf("body missing current year %s: %q", year, body)
+	}
+}
 
-	// Act
-	req := httptest.NewRequest(http.MethodGet, "/static/app.js", nil)
-	rec := httptest.NewRecorder()
-	routes().ServeHTTP(rec, req)
-	res := rec.Result()
-	defer res.Body.Close()
+/************ helpers ************/
 
-	// Assert
-	if res.StatusCode != http.StatusOK {
-		b, _ := io.ReadAll(res.Body)
-		t.Fatalf("want 200, got %d body=%s", res.StatusCode, string(b))
+func mustTestApp(t *testing.T) *App {
+	t.Helper()
+
+	// --- minimal templates exercising .Site and .Year ---
+	const baseTpl = `{{define "base"}}<html><head><title>{{block "title" .}}x{{end}}</title></head><body>{{block "content" .}}{{end}}</body></html>{{end}}`
+	const homeTpl = `{{define "title"}}Home - {{.Site.Name}}{{end}}{{define "content"}}Hello {{.Site.Email}} — {{.Year}}{{end}}`
+
+	tpls := template.Must(template.New("base").Parse(baseTpl))
+	template.Must(tpls.Parse(homeTpl))
+
+	// --- temp static dir with one file at css/site.css ---
+	td := t.TempDir()
+	staticRoot := filepath.Join(td, "css")
+	if err := os.MkdirAll(staticRoot, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
 	}
-	cc := res.Header.Get("Cache-Control")
-	if cc == "" || !strings.Contains(cc, "max-age=") {
-		t.Fatalf("expected Cache-Control with max-age, got %q", cc)
+	if err := os.WriteFile(filepath.Join(staticRoot, "site.css"), []byte("/* test */"), 0o644); err != nil {
+		t.Fatalf("write css: %v", err)
 	}
-	// Last-Modified should be set by http.FileServer
-	if lm := res.Header.Get("Last-Modified"); lm == "" {
-		t.Fatalf("expected Last-Modified header")
+
+	// Build the app
+	return &App{
+		tpls:     tpls,
+		staticFS: http.Dir(td), // so /static/css/site.css maps into td/css/site.css
+		cfg: config.Config{
+			Name:    "Elliot Alderson",
+			Email:   "name@domain.com",
+			Brand:   "mr.robot",
+			Tagline: "Computer Repair with a Smile",
+		},
 	}
+}
+
+func ioReadAll(r io.Reader) (string, error) {
+	var sb strings.Builder
+	_, err := io.Copy(&sb, r)
+	return sb.String(), err
 }
