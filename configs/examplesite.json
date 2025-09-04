@@ -1,0 +1,130 @@
+{
+  "Title": "Mr. Robot",
+  "Name": "Elliot Alderson",
+  "Email": "mrrobot@usa.com",
+  "Brand": "mr.robot",
+  "Tagline": "Computer Repair with a Smile.",
+
+  "Head": {
+    "MetaDescription": "we repair computers, while smiling.",
+    "Preloads": [
+      {"Href": "/static/css/site.css", "As": "style"}
+    ],
+    "Styles": ["/static/css/site.css"],
+    "Scripts": ["/static/js/site.js"]
+  },
+
+  "Header": {
+    "Brand": "mr.robot",
+    "Nav": [
+      {"Href": "#work", "Label": "Work"},
+      {"Href": "#services", "Label": "Services"},
+      {"Href": "#approach", "Label": "Approach"},
+      {"Href": "#about", "Label": "About"},
+      {"Href": "#contact", "Label": "Contact", "Class": "btn btn--ghost"}
+    ]
+  },
+
+  "Hero": {
+    "Title": "Broken computer? No problem.",
+    "Lede": "So it goes… until your hard drive stops. Then it comes to us.",
+    "Actions": [
+      {"Href": "#work", "Label": "See selected work", "Class": "btn"},
+      {"Href": "#contact", "Label": "Get in touch", "Class": "btn btn--ghost"}
+    ]
+  },
+
+  "Work": {
+    "Title": "Curated work",
+    "Cards": [
+      {
+        "Title": "Broken Screens",
+        "Tech": "Screwdrivers · Amazon",
+        "Body": "We've fixed some broken screens.",
+        "LinkHref": "#",
+        "LinkText": "YouTube",
+        "Disabled": true
+      },
+      {
+        "Title": "Virus Removal",
+        "Tech": "Python · Bash",
+        "Body": "We got those buggers.",
+        "LinkHref": "#",
+        "LinkText": "McAfee",
+        "Disabled": true
+      },
+      {
+        "Title": "RAM Upgrade",
+        "Tech": "eBay",
+        "Body": "We replaced some RAM and saw 1.3x performance increase.",
+        "LinkHref": "#",
+        "LinkText": "eBay Link",
+        "Disabled": true
+      }
+    ]
+  },
+
+  "Services": {
+    "Title": "How I help",
+    "Alt": true,
+    "Columns": [
+      {
+        "Title": "Turning it on and off again.",
+        "Items": [
+          "First we turn it off",
+          "Then we wait for a few seconds",
+          "Then we turn it back on"
+        ]
+      },
+      {
+        "Title": "Screen Repair",
+        "Items": [
+          "Screen Removal",
+          "Screen Purchase",
+          "Screen Replacement"
+        ]
+      },
+      {
+        "Title": "Virus Removal",
+        "Items": [
+          "Back up your data",
+          "Wipe the whole thing",
+          "Reload your data"
+        ]
+      }
+    ]
+  },
+
+  "Approach": {
+    "Title": "Approach",
+    "Steps": [
+      {"Strong": "Discuss", "Text": "talk about the issue with the client."},
+      {"Strong": "Diagnose", "Text": "identify the issue's root cause."},
+      {"Strong": "Solve", "Text": "fix the issue."},
+      {"Strong": "Deliver", "Text": "quick turnaround."}
+    ]
+  },
+
+  "About": {
+    "Title": "About",
+    "Paragraphs": [
+      "We repair computers."
+    ]
+  },
+
+  "Links": {
+    "GitHub": "https://github.com/elliotalderson",
+    "LinkedIn": "https://www.linkedin.com/in/elliotalderson",
+    "CV": "/static/elliotalderson.pdf"
+  },
+
+  "Contact": {
+    "Title": "Contact",
+    "EmailLabel": "Email me:",
+    "Button": {"Href": "#email", "Label": "Copy", "Class": "btn btn--tiny"}
+  },
+
+  "Footer": {
+    "Note": "Minimal analytics. No tracking cookies."
+  }
+}
