@@ -4,6 +4,7 @@ package main
 import (
 	"html/template"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -254,6 +255,25 @@ func TestHome_Concurrent_NoPanic(t *testing.T) {
 	wg.Wait()
 }
 
+// 7) Request id header present
+func TestRequestID_HeaderPresent(t *testing.T) {
+	app := mustTestApp(t)
+	srv := httptest.NewServer(app.Routes())
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL + "/")
+	if err != nil {
+		t.Fatalf("GET /: %v", err)
+	}
+	defer resp.Body.Close()
+
+	id := resp.Header.Get("X-Request-Id")
+	if id == "" {
+		t.Fatalf("missing X-Request-Id header")
+	}
+}
+
+
 /************ helpers ************/
 
 func mustTestApp(t *testing.T) *App {
@@ -276,17 +296,20 @@ func mustTestApp(t *testing.T) *App {
 		t.Fatalf("write css: %v", err)
 	}
 
-	// Build the app
+	logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
+
 	return &App{
-		tpls:     tpls,
-		staticFS: http.Dir(td), // so /static/css/site.css maps into td/css/site.css
-		cfg: config.Config{
-			Name:    "Elliot Alderson",
-			Email:   "name@domain.com",
-			Brand:   "mr.robot",
-			Tagline: "Computer Repair with a Smile",
-		},
-	}
+        tpls:     tpls,
+        staticFS: http.Dir(td),
+        cfg: config.Config{
+            Name:    "Elliot Alderson",
+            Email:   "name@domain.com",
+            Brand:   "mr.robot",
+            Tagline: "Computer Repair with a Smile",
+        },
+        log: logger, 
+    }
+
 }
 
 func ioReadAll(r io.Reader) (string, error) {

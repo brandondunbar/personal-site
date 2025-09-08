@@ -3,7 +3,9 @@ package main
 
 import (
 	"html/template"
+	"log/slog"
 	"net/http"
+	"os"
 	"path/filepath"
 	"runtime"
 	"time"
@@ -15,6 +17,7 @@ type App struct {
 	tpls     *template.Template
 	staticFS http.FileSystem
 	cfg      config.Config
+	log      *slog.Logger
 }
 
 type TemplateData struct {
@@ -41,10 +44,19 @@ func NewApp() (*App, error) {
 		tpls:     tpls,
 		staticFS: http.Dir(templatePath("web/static")),
 		cfg:      cfg,
+		log:      newLogger(),
 	}, nil
 }
 
-// Small helpers kept with the App since they're used by wiring.
+func newLogger() *slog.Logger {
+	var h slog.Handler
+	if os.Getenv("LOG_FORMAT") == "json" || os.Getenv("APP_ENV") == "prod" {
+		h = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo})
+	} else {
+		h = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo})
+	}
+	return slog.New(h).With(slog.String("service", "personal-site"))
+}
 
 func cacheControl(next http.Handler) http.Handler {
 	const cc = "public, max-age=31536000, immutable"
@@ -55,7 +67,7 @@ func cacheControl(next http.Handler) http.Handler {
 }
 
 func templatePath(rel string) string {
-	_, file, _, _ := runtime.Caller(0) // file = .../cmd/web/app.go (this file)
+	_, file, _, _ := runtime.Caller(0) // file = .../cmd/web/app.go
 	return filepath.Join(filepath.Dir(file), "..", "..", rel)
 }
 
