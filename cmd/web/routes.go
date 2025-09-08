@@ -24,6 +24,11 @@ func (a *App) Routes() http.Handler {
 
 	// Home → render template using wrapper data and buffered output
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+
 		data := TemplateData{
 			Site: a.cfg,
 			Year: now().Year(),
@@ -39,6 +44,6 @@ func (a *App) Routes() http.Handler {
 		_, _ = buf.WriteTo(w)
 	})
 
-	return mux
+	return a.recoverMiddleware(mux)
 }
 

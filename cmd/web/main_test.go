@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -86,6 +87,173 @@ func TestHome_Renders_WithConfigAndYear(t *testing.T) {
 	}
 }
 
+func TestPanicRecovery_Returns500(t *testing.T) {
+	app := mustTestApp(t)
+
+	// A handler that panics before writing anything
+	panicHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		panic("boom")
+	})
+
+	srv := httptest.NewServer(app.recoverMiddleware(panicHandler))
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL + "/anything")
+	if err != nil {
+		t.Fatalf("GET panic route: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusInternalServerError {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, http.StatusInternalServerError)
+	}
+	ct := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(ct, "text/html") {
+		t.Fatalf("Content-Type = %q, want text/html", ct)
+	}
+}
+
+// --- additional tests ---
+
+// 1) Unknown routes return 404 (ensures mux wiring isn't shadowed)
+func TestNotFound_Returns404(t *testing.T) {
+	app := mustTestApp(t)
+	srv := httptest.NewServer(app.Routes())
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL + "/nope")
+	if err != nil {
+		t.Fatalf("GET /nope: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNotFound {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, http.StatusNotFound)
+	}
+}
+
+// 2) HEAD on /healthz should also be OK
+func TestHealthz_HEAD_OK(t *testing.T) {
+	app := mustTestApp(t)
+	srv := httptest.NewServer(app.Routes())
+	defer srv.Close()
+
+	req, _ := http.NewRequest("HEAD", srv.URL+"/healthz", nil)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("HEAD /healthz: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, http.StatusOK)
+	}
+	ct := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(ct, "text/plain") {
+		t.Fatalf("Content-Type = %q, want text/plain", ct)
+	}
+}
+
+// 3) Home sets HTML content-type (sanity on successful render path)
+func TestHome_ContentTypeHTML(t *testing.T) {
+	app := mustTestApp(t)
+	srv := httptest.NewServer(app.Routes())
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL + "/")
+	if err != nil {
+		t.Fatalf("GET /: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if ct := resp.Header.Get("Content-Type"); !strings.HasPrefix(ct, "text/html") {
+		t.Fatalf("Content-Type = %q, want text/html", ct)
+	}
+}
+
+// 4) If the template is broken, handler should 500 (exercise error branch)
+func TestHome_TemplateError_Returns500Plain(t *testing.T) {
+	app := mustTestApp(t)
+
+	// Replace templates with one that lacks "base" to force ExecuteTemplate error
+	tpls := template.Must(template.New("x").Parse(`{{define "notbase"}}noop{{end}}`))
+	app.tpls = tpls
+
+	srv := httptest.NewServer(app.Routes())
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL + "/")
+	if err != nil {
+		t.Fatalf("GET /: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusInternalServerError {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, http.StatusInternalServerError)
+	}
+	if ct := resp.Header.Get("Content-Type"); !strings.HasPrefix(ct, "text/plain") {
+		t.Fatalf("Content-Type = %q, want text/plain", ct)
+	}
+	body, _ := ioReadAll(resp.Body)
+	if !strings.Contains(body, "template error:") {
+		t.Fatalf("body = %q, want contains 'template error:'", body)
+	}
+}
+
+// 5) Recovery middleware renders friendly 500 page when a handler panics (using template if available)
+func TestPanicRecovery_UsesErrorTemplateWhenAvailable(t *testing.T) {
+	app := mustTestApp(t)
+
+	// Provide a tiny error template so the middleware path is deterministic
+	errTpl := template.Must(template.New("err").Parse(`{{define "error500"}}ERR {{.Year}} {{.Site.Name}}{{end}}`))
+	app.tpls = errTpl
+
+	panicHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { panic("boom") })
+	srv := httptest.NewServer(app.recoverMiddleware(panicHandler))
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL + "/panic")
+	if err != nil {
+		t.Fatalf("GET /panic: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusInternalServerError {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, http.StatusInternalServerError)
+	}
+	if ct := resp.Header.Get("Content-Type"); !strings.HasPrefix(ct, "text/html") {
+		t.Fatalf("Content-Type = %q, want text/html", ct)
+	}
+	body, _ := ioReadAll(resp.Body)
+	if !strings.Contains(body, "ERR") {
+		t.Fatalf("error template not used, body=%q", body)
+	}
+}
+
+// 6) Light concurrency probe on home route (helps catch data races with -race)
+func TestHome_Concurrent_NoPanic(t *testing.T) {
+	app := mustTestApp(t)
+	srv := httptest.NewServer(app.Routes())
+	defer srv.Close()
+
+	var wg sync.WaitGroup
+	const N = 32
+	wg.Add(N)
+	for i := 0; i < N; i++ {
+		go func() {
+			defer wg.Done()
+			resp, err := http.Get(srv.URL + "/")
+			if err != nil {
+				t.Errorf("GET /: %v", err)
+				return
+			}
+			_, _ = io.Copy(io.Discard, resp.Body)
+			resp.Body.Close()
+		}()
+	}
+	wg.Wait()
+}
+
 /************ helpers ************/
 
 func mustTestApp(t *testing.T) *App {
@@ -126,3 +294,4 @@ func ioReadAll(r io.Reader) (string, error) {
 	_, err := io.Copy(&sb, r)
 	return sb.String(), err
 }
+
