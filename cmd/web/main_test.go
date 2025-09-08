@@ -18,7 +18,7 @@ import (
 
 func TestHealthz_OK(t *testing.T) {
 	app := mustTestApp(t)
-	srv := httptest.NewServer(app.routes())
+	srv := httptest.NewServer(app.Routes())
 	defer srv.Close()
 
 	resp, err := http.Get(srv.URL + "/healthz")
@@ -38,7 +38,7 @@ func TestHealthz_OK(t *testing.T) {
 
 func TestStaticServesFile_WithCacheControl(t *testing.T) {
 	app := mustTestApp(t)
-	srv := httptest.NewServer(app.routes())
+	srv := httptest.NewServer(app.Routes())
 	defer srv.Close()
 
 	// File created by mustTestApp at /static/css/site.css
@@ -60,7 +60,7 @@ func TestStaticServesFile_WithCacheControl(t *testing.T) {
 
 func TestHome_Renders_WithConfigAndYear(t *testing.T) {
 	app := mustTestApp(t)
-	srv := httptest.NewServer(app.routes())
+	srv := httptest.NewServer(app.Routes())
 	defer srv.Close()
 
 	resp, err := http.Get(srv.URL + "/")
