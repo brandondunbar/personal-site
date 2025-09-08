@@ -273,20 +273,47 @@ func TestRequestID_HeaderPresent(t *testing.T) {
 	}
 }
 
+// Custom 404
+func TestNotFound_RendersCustom404(t *testing.T) {
+	app := mustTestApp(t)
+	srv := httptest.NewServer(app.Routes())
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL + "/definitely-not-here")
+	if err != nil {
+		t.Fatalf("GET /definitely-not-here: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNotFound {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, http.StatusNotFound)
+	}
+	if ct := resp.Header.Get("Content-Type"); !strings.HasPrefix(ct, "text/html") {
+		t.Fatalf("Content-Type = %q, want text/html", ct)
+	}
+	body, _ := ioReadAll(resp.Body)
+	if !strings.Contains(body, "Custom 404") {
+		t.Fatalf("custom 404 not rendered: %q", body)
+	}
+}
+
 
 /************ helpers ************/
-
+// helper: mustTestApp (no about template)
 func mustTestApp(t *testing.T) *App {
 	t.Helper()
 
-	// --- minimal templates exercising .Site and .Year ---
+	// Layout + home content
 	const baseTpl = `{{define "base"}}<html><head><title>{{block "title" .}}x{{end}}</title></head><body>{{block "content" .}}{{end}}</body></html>{{end}}`
 	const homeTpl = `{{define "title"}}Home - {{.Site.Name}}{{end}}{{define "content"}}Hello {{.Site.Email}} — {{.Year}}{{end}}`
+	// Custom 404 page used by renderNotFound (template name "notfound")
+	const notFoundTpl = `{{define "notfound"}}<!doctype html><title>Not Found</title><h1>Custom 404</h1>{{end}}`
 
 	tpls := template.Must(template.New("base").Parse(baseTpl))
 	template.Must(tpls.Parse(homeTpl))
+	template.Must(tpls.Parse(notFoundTpl))
 
-	// --- temp static dir with one file at css/site.css ---
+	// temp static dir with one file at css/site.css
 	td := t.TempDir()
 	staticRoot := filepath.Join(td, "css")
 	if err := os.MkdirAll(staticRoot, 0o755); err != nil {
@@ -296,20 +323,20 @@ func mustTestApp(t *testing.T) *App {
 		t.Fatalf("write css: %v", err)
 	}
 
+	// Quiet logger for tests
 	logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
 
 	return &App{
-        tpls:     tpls,
-        staticFS: http.Dir(td),
-        cfg: config.Config{
-            Name:    "Elliot Alderson",
-            Email:   "name@domain.com",
-            Brand:   "mr.robot",
-            Tagline: "Computer Repair with a Smile",
-        },
-        log: logger, 
-    }
-
+		tpls:     tpls,
+		staticFS: http.Dir(td),
+		cfg: config.Config{
+			Name:    "Elliot Alderson",
+			Email:   "name@domain.com",
+			Brand:   "mr.robot",
+			Tagline: "Computer Repair with a Smile",
+		},
+		log: logger,
+	}
 }
 
 func ioReadAll(r io.Reader) (string, error) {

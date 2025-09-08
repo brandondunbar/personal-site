@@ -22,16 +22,13 @@ func (a *App) Routes() http.Handler {
 	fs := http.FileServer(a.staticFS)
 	mux.Handle("/static/", cacheControl(http.StripPrefix("/static/", fs)))
 
-	// Home — only for "/"
+	// Home — only for "/"; others → custom 404
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
-			http.NotFound(w, r)
+			a.renderNotFound(w, r)
 			return
 		}
-		data := TemplateData{
-			Site: a.cfg,
-			Year: now().Year(),
-		}
+		data := TemplateData{Site: a.cfg, Year: now().Year()}
 		var buf bytes.Buffer
 		if err := a.tpls.ExecuteTemplate(&buf, "base", data); err != nil {
 			http.Error(w, "template error: "+err.Error(), http.StatusInternalServerError)
@@ -41,11 +38,24 @@ func (a *App) Routes() http.Handler {
 		_, _ = buf.WriteTo(w)
 	})
 
-	// Middleware chain: RequestID -> Recover -> Logger
-	h := httpx.RequestID(mux)   // sets X-Request-Id and stores in context
-	h = a.recoverMiddleware(h)  // friendly 500 + panic logging
-	h = httpx.Logger(a.log)(h)  // JSON access log with request_id, method, path, status, duration
-
+	// Chain: RequestID -> Recover -> Logger
+	h := httpx.RequestID(mux)
+	h = a.recoverMiddleware(h)
+	h = httpx.Logger(a.log)(h)
 	return h
+}
+
+// custom 404
+func (a *App) renderNotFound(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+
+	if a != nil && a.tpls != nil {
+		data := TemplateData{Site: a.cfg, Year: now().Year()}
+		if err := a.tpls.ExecuteTemplate(w, "notfound", data); err == nil {
+			return
+		}
+	}
+	_, _ = w.Write([]byte(`<!doctype html><meta charset="utf-8"><title>Not Found</title><h1>Page not found</h1>`))
 }
 

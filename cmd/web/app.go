@@ -1,3 +1,4 @@
+
 // cmd/web/app.go
 package main
 
@@ -29,12 +30,14 @@ func NewApp() (*App, error) {
 	tpls, err := template.ParseFiles(
 		templatePath("web/templates/base.html.tmpl"),
 		templatePath("web/templates/home.html.tmpl"),
+		// Optional if you have them:
+		templatePath("web/templates/404.html.tmpl"),
+		templatePath("web/templates/500.html.tmpl"),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	// Load JSON config
 	cfg, err := config.LoadConfig(templatePath("configs/site.json"))
 	if err != nil {
 		return nil, err
@@ -58,6 +61,7 @@ func newLogger() *slog.Logger {
 	return slog.New(h).With(slog.String("service", "personal-site"))
 }
 
+
 func cacheControl(next http.Handler) http.Handler {
 	const cc = "public, max-age=31536000, immutable"
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -67,10 +71,9 @@ func cacheControl(next http.Handler) http.Handler {
 }
 
 func templatePath(rel string) string {
-	_, file, _, _ := runtime.Caller(0) // file = .../cmd/web/app.go
+	_, file, _, _ := runtime.Caller(0) // this file's path
 	return filepath.Join(filepath.Dir(file), "..", "..", rel)
 }
 
-// now() kept as a function for easy stubbing later if needed.
 func now() time.Time { return time.Now() }
 
