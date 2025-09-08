@@ -2,8 +2,13 @@ package config
 
 import (
 	"encoding/json"
+	"net"
 	"os"
+	"strings"
+	"time"
 )
+
+/* ---------- Site content (unchanged API) ---------- */
 
 type Preload struct {
 	Href string `json:"Href"`
@@ -62,12 +67,12 @@ type ServicesColumn struct {
 type Services struct {
 	Title   string           `json:"Title"`
 	Columns []ServicesColumn `json:"Columns"`
-	Alt     bool             `json:"Alt,omitempty"` // for section--alt class toggle if you want it
+	Alt     bool             `json:"Alt,omitempty"`
 }
 
 type Step struct {
-	Strong string `json:"Strong"` // bold part
-	Text   string `json:"Text"`   // rest of sentence
+	Strong string `json:"Strong"`
+	Text   string `json:"Text"`
 }
 
 type Approach struct {
@@ -84,22 +89,20 @@ type Links struct {
 type About struct {
 	Title      string   `json:"Title"`
 	Paragraphs []string `json:"Paragraphs"`
-	// If you prefer explicit label+href entries instead of Links map, use []Action
 }
 
 type Contact struct {
 	Title      string `json:"Title"`
-	EmailLabel string `json:"EmailLabel"` // e.g., "Email me:"
+	EmailLabel string `json:"EmailLabel"`
 	Button     Action `json:"Button"`
 }
 
 type Footer struct {
-	Note string `json:"Note"` // trailing text after © YEAR Name
+	Note string `json:"Note"`
 }
 
 type Config struct {
-	// Site-wide
-	Title   string `json:"Title"` // e.g., "Brandon — Pragmatic Backend & AI"
+	Title   string `json:"Title"`
 	Name    string `json:"Name"`
 	Email   string `json:"Email"`
 	Brand   string `json:"Brand"`
@@ -117,6 +120,7 @@ type Config struct {
 	Footer   Footer   `json:"Footer"`
 }
 
+// LoadConfig reads site content JSON and applies env overrides.
 func LoadConfig(path string) (Config, error) {
 	var c Config
 	b, err := os.ReadFile(path)
@@ -131,3 +135,97 @@ func LoadConfig(path string) (Config, error) {
 	}
 	return c, nil
 }
+
+/* ---------- Runtime (env) configuration ---------- */
+
+// Runtime holds process/runtime settings derived from environment.
+type Runtime struct {
+	Env     string // "dev" or "prod"
+	Addr    string // listen address, e.g. ":8080" or "127.0.0.1:9090"
+	BaseURL string // externally visible base URL (no trailing slash)
+}
+
+// LoadRuntime loads runtime config from env with sane defaults.
+// Precedence:
+//   ADDR > PORT > default(":8080")
+//   BASE_URL used if set, otherwise derived from Addr.
+//   Env from APP_ENV|GO_ENV|ENV, normalized to "dev" or "prod".
+func LoadRuntime() Runtime {
+	env := normalizeEnv(firstNonEmpty(
+		os.Getenv("APP_ENV"),
+		os.Getenv("GO_ENV"),
+		os.Getenv("ENV"),
+	))
+
+	addr := os.Getenv("ADDR")
+	if addr == "" {
+		if p := os.Getenv("PORT"); p != "" {
+			addr = ":" + strings.TrimPrefix(p, ":")
+		} else {
+			addr = ":8080"
+		}
+	}
+
+	base := strings.TrimRight(os.Getenv("BASE_URL"), "/")
+	if base == "" {
+		base = deriveBaseURL(addr, env)
+	}
+
+	return Runtime{
+		Env:     env,
+		Addr:    addr,
+		BaseURL: base,
+	}
+}
+
+/* ---------- helpers ---------- */
+
+func firstNonEmpty(vals ...string) string {
+	for _, v := range vals {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
+}
+
+func normalizeEnv(v string) string {
+	switch strings.ToLower(strings.TrimSpace(v)) {
+	case "prod", "production", "release":
+		return "prod"
+	default:
+		return "dev"
+	}
+}
+
+func deriveBaseURL(addr, env string) string {
+	// Scheme: keep it simple; use HTTP unless user provides BASE_URL.
+	scheme := "http"
+	host := "localhost"
+	port := ""
+
+	if strings.HasPrefix(addr, ":") {
+		port = strings.TrimPrefix(addr, ":")
+	} else {
+		// Try host:port; if it fails, just use the raw addr as host (no port).
+		if h, p, err := net.SplitHostPort(addr); err == nil {
+			host, port = h, p
+		} else {
+			host = addr
+		}
+	}
+
+	// Replace wildcard bind addresses with localhost for a usable URL.
+	if host == "" || host == "0.0.0.0" || host == "::" {
+		host = "localhost"
+	}
+
+	if port != "" {
+		return scheme + "://" + host + ":" + port
+	}
+	return scheme + "://" + host
+}
+
+// (Keep a tiny dependency on time so Runtime can be extended in future without import churn.)
+var _ = time.Now
+

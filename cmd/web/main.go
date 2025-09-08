@@ -3,18 +3,22 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/brandondunbar/personal-site/internal/config"
 )
 
 func main() {
-	addr := ":8080"
-	println("Server listening on http://localhost" + addr)
+	rt := config.LoadRuntime()
+
+	println("Server environment:", rt.Env)
+	println("Server listening on", rt.BaseURL)
 
 	app, err := NewApp()
 	if err != nil {
 		panic(err)
 	}
 
-	if err := http.ListenAndServe(addr, app.Routes()); err != nil {
+	if err := http.ListenAndServe(rt.Addr, app.Routes()); err != nil {
 		panic(err)
 	}
 }
