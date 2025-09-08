@@ -51,18 +51,6 @@ func (a *App) recoverMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (a *App) requestIDMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := r.Header.Get("X-Request-Id")
-		if id == "" {
-			id = newReqID()
-		}
-		ctx := context.WithValue(r.Context(), ctxKeyReqID, id)
-		w.Header().Set("X-Request-Id", id)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
 type statusWriter struct {
 	http.ResponseWriter
 	status int
@@ -78,26 +66,6 @@ func (w *statusWriter) Write(b []byte) (int, error) {
 	n, err := w.ResponseWriter.Write(b)
 	w.bytes += int64(n)
 	return n, err
-}
-
-func (a *App) loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		sw := &statusWriter{ResponseWriter: w, status: http.StatusOK}
-		start := time.Now()
-		next.ServeHTTP(sw, r)
-		if a.log != nil {
-			a.log.Info("http_request",
-				slog.String("req_id", reqIDFromCtx(r.Context())),
-				slog.String("method", r.Method),
-				slog.String("path", r.URL.Path),
-				slog.Int("status", sw.status),
-				slog.Int64("bytes", sw.bytes),
-				slog.Duration("duration", time.Since(start)),
-				slog.String("remote_ip", remoteIP(r)),
-				slog.String("ua", r.UserAgent()),
-			)
-		}
-	})
 }
 
 func reqIDFromCtx(ctx context.Context) string {

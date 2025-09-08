@@ -4,6 +4,8 @@ package main
 import (
 	"bytes"
 	"net/http"
+
+	"github.com/brandondunbar/personal-site/internal/httpx"
 )
 
 func (a *App) Routes() http.Handler {
@@ -39,10 +41,10 @@ func (a *App) Routes() http.Handler {
 		_, _ = buf.WriteTo(w)
 	})
 
-	// IMPORTANT: wrap the mux with middlewares
-	h := a.requestIDMiddleware(mux) // sets X-Request-Id
-	h = a.recoverMiddleware(h)      // friendly 500 + logs on panic
-	h = a.loggingMiddleware(h)      // structured access logs
+	// Middleware chain: RequestID -> Recover -> Logger
+	h := httpx.RequestID(mux)   // sets X-Request-Id and stores in context
+	h = a.recoverMiddleware(h)  // friendly 500 + panic logging
+	h = httpx.Logger(a.log)(h)  // JSON access log with request_id, method, path, status, duration
 
 	return h
 }
