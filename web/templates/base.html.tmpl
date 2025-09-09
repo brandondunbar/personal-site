@@ -1,0 +1,53 @@
+{{define "base"}}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{block "title" .}}{{.Site.Title}}{{end}}</title>
+
+  {{with .Site.Head.MetaDescription}}<meta name="description" content="{{.}}">{{end}}
+
+  {{range .Site.Head.Preloads}}
+  <link rel="preload" href="{{.Href}}" as="{{.As}}">
+  {{end}}
+
+  {{range .Site.Head.Styles}}
+  <link rel="stylesheet" href="{{.}}">
+  {{end}}
+
+  {{block "head" .}}{{end}}
+</head>
+<body>
+  {{block "header" .}}
+  <header class="site-header">
+    <div class="container row space-between center">
+      <a href="/" class="brand" aria-label="Home">{{.Site.Header.Brand}}</a>
+      <nav aria-label="Primary">
+        {{range .Site.Header.Nav}}
+          <a href="{{.Href}}" {{if .Class}}class="{{.Class}}"{{end}}>{{.Label}}</a>
+        {{end}}
+      </nav>
+    </div>
+  </header>
+  {{end}}
+
+  <main>
+    {{block "content" .}}{{end}}
+  </main>
+
+  {{block "footer" .}}
+  <footer class="site-footer">
+    <div class="container">
+      <small>© {{.Year}} {{.Site.Name}}. {{.Site.Footer.Note}}</small>
+    </div>
+  </footer>
+  {{end}}
+
+  {{range .Site.Head.Scripts}}
+  <script defer src="{{.}}"></script>
+  {{end}}
+  {{block "scripts" .}}{{end}}
+</body>
+</html>
+{{end}}

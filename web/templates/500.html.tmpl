@@ -1,0 +1,22 @@
+{{- /* web/templates/500.html.tmpl */ -}}
+{{define "error500"}}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Something went wrong — {{.Site.Name}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" href="/static/css/site.css" as="style">
+  <link rel="stylesheet" href="/static/css/site.css">
+</head>
+<body>
+  <main class="container" style="padding:2rem">
+    <h1>We hit a snag</h1>
+    <p>Sorry—something unexpected happened. Please try again.</p>
+    <p><a href="/">← Back to home</a></p>
+    <footer style="margin-top:2rem;opacity:.7">© {{.Year}} {{.Site.Name}}</footer>
+  </main>
+</body>
+</html>
+{{end}}
+

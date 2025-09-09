@@ -1,0 +1,79 @@
+{{- /* web/templates/home.html.tmpl */ -}}
+
+{{define "title"}}{{.Site.Title}}{{end}}
+
+{{define "head"}}{{/* extra page-specific head if needed; usually empty now */}}{{end}}
+
+{{define "header"}}{{/* use base header (config-driven) by default */}}{{end}}
+
+{{define "content"}}
+  <section class="hero container">
+    <h1>{{.Site.Hero.Title}}</h1>
+    <p class="lede">{{.Site.Hero.Lede}}</p>
+    <div class="actions">
+      {{range .Site.Hero.Actions}}
+        <a href="{{.Href}}" class="{{if .Class}}{{.Class}}{{else}}btn{{end}}">{{.Label}}</a>
+      {{end}}
+    </div>
+  </section>
+
+  <section id="work" class="section container">
+    <h2>{{.Site.Work.Title}}</h2>
+    <div class="grid cards">
+      {{range .Site.Work.Cards}}
+      <article class="card">
+        <h3>{{.Title}}</h3>
+        <p class="muted">{{.Tech}}</p>
+        <p>{{.Body}}</p>
+        <a class="link" href="{{.LinkHref}}" {{if .Disabled}}aria-disabled="true"{{end}}>{{.LinkText}}</a>
+      </article>
+      {{end}}
+    </div>
+  </section>
+
+  <section id="services" class="section {{if .Site.Services.Alt}}section--alt{{end}} container">
+    <h2>{{.Site.Services.Title}}</h2>
+    <div class="grid three">
+      {{range .Site.Services.Columns}}
+      <div>
+        <h3>{{.Title}}</h3>
+        <ul>
+          {{range .Items}}<li>{{.}}</li>{{end}}
+        </ul>
+      </div>
+      {{end}}
+    </div>
+  </section>
+
+  <section id="approach" class="section container">
+    <h2>{{.Site.Approach.Title}}</h2>
+    <ol class="timeline">
+      {{range .Site.Approach.Steps}}
+        <li><strong>{{.Strong}}</strong> — {{.Text}}</li>
+      {{end}}
+    </ol>
+  </section>
+
+  <section id="about" class="section section--alt container">
+    <h2>{{.Site.About.Title}}</h2>
+    {{range .Site.About.Paragraphs}}
+      <p>{{.}}</p>
+    {{end}}
+    <p class="icons">
+      <a href="{{.Site.Links.GitHub}}" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="{{.Site.Links.LinkedIn}}" target="_blank" rel="noopener">LinkedIn</a> ·
+      <a href="{{.Site.Links.CV}}">CV</a>
+    </p>
+  </section>
+
+  <section id="contact" class="section container">
+    <h2>{{.Site.Contact.Title}}</h2>
+    <p>{{.Site.Contact.EmailLabel}}
+      <a id="email" href="mailto:{{.Site.Email}}">{{.Site.Email}}</a>
+      <button class="btn btn--tiny" data-copy="#email">{{.Site.Contact.Button.Label}}</button>
+    </p>
+  </section>
+{{end}}
+
+{{define "footer"}}{{/* use base footer (config-driven) */}}{{end}}
+{{define "scripts"}}{{/* extra page scripts if needed; usually empty now */}}{{end}}

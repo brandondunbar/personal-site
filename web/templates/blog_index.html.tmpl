@@ -1,0 +1,25 @@
+{{define "blog_index"}}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Blog — {{.Site.Name}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" href="/static/css/site.css" as="style">
+  <link rel="stylesheet" href="/static/css/site.css">
+</head>
+<body>
+  <main class="container" style="padding:2rem">
+    <h1>Blog</h1>
+    <ul>
+      {{range .Posts}}
+        <li><a href="/blog/{{.Slug}}">{{.Title}}</a></li>
+      {{else}}
+        <li>No posts yet.</li>
+      {{end}}
+    </ul>
+  </main>
+</body>
+</html>
+{{end}}
+

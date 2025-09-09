@@ -1,0 +1,21 @@
+{{define "notfound"}}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Not Found — {{.Site.Name}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" href="/static/css/site.css" as="style">
+  <link rel="stylesheet" href="/static/css/site.css">
+</head>
+<body>
+  <main class="container" style="padding:2rem">
+    <h1>404 — Page not found</h1>
+    <p>Sorry, we couldn’t find that page.</p>
+    <p><a href="/">← Back to home</a></p>
+    <footer style="margin-top:2rem;opacity:.7">© {{.Year}} {{.Site.Name}}</footer>
+  </main>
+</body>
+</html>
+{{end}}
+

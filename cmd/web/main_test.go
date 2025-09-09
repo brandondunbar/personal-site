@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/brandondunbar/personal-site/internal/blog"
 	"github.com/brandondunbar/personal-site/internal/config"
 )
 
@@ -59,6 +60,21 @@ func TestStaticServesFile_WithCacheControl(t *testing.T) {
 		t.Fatalf("Cache-Control = %q, want %q", gotCC, wantCC)
 	}
 }
+
+// --- blog test double ---
+
+type fakeBlog struct{ posts []blog.Post }
+
+func (f fakeBlog) All() []blog.Post { return append([]blog.Post(nil), f.posts...) }
+func (f fakeBlog) BySlug(s string) (blog.Post, bool) {
+	for _, p := range f.posts {
+		if p.Slug == s {
+			return p, true
+		}
+	}
+	return blog.Post{}, false
+}
+func (f fakeBlog) ByTag(tag string) []blog.Post { return nil }
 
 func TestHome_Renders_WithConfigAndYear(t *testing.T) {
 	app := mustTestApp(t)
@@ -297,8 +313,8 @@ func TestNotFound_RendersCustom404(t *testing.T) {
 	}
 }
 
-
 /************ helpers ************/
+
 // helper: mustTestApp (no about template)
 func mustTestApp(t *testing.T) *App {
 	t.Helper()
@@ -336,6 +352,9 @@ func mustTestApp(t *testing.T) *App {
 			Tagline: "Computer Repair with a Smile",
 		},
 		log: logger,
+		blog: fakeBlog{posts: []blog.Post{
+			{Title: "Hello", Slug: "hello", Date: time.Now(), HTML: template.HTML("Hi")},
+		}},
 	}
 }
 

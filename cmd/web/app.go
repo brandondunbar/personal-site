@@ -1,4 +1,3 @@
-
 // cmd/web/app.go
 package main
 
@@ -11,6 +10,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/brandondunbar/personal-site/internal/blog"
 	"github.com/brandondunbar/personal-site/internal/config"
 )
 
@@ -19,6 +19,7 @@ type App struct {
 	staticFS http.FileSystem
 	cfg      config.Config
 	log      *slog.Logger
+	blog     blog.Store
 }
 
 type TemplateData struct {
@@ -30,9 +31,10 @@ func NewApp() (*App, error) {
 	tpls, err := template.ParseFiles(
 		templatePath("web/templates/base.html.tmpl"),
 		templatePath("web/templates/home.html.tmpl"),
-		// Optional if you have them:
-		templatePath("web/templates/404.html.tmpl"),
-		templatePath("web/templates/500.html.tmpl"),
+		templatePath("web/templates/blog_index.html.tmpl"),
+		templatePath("web/templates/blog_post.html.tmpl"),
+		templatePath("web/templates/404.html.tmpl"), // optional
+		templatePath("web/templates/500.html.tmpl"), // optional
 	)
 	if err != nil {
 		return nil, err
@@ -43,11 +45,23 @@ func NewApp() (*App, error) {
 		return nil, err
 	}
 
+	// Blog store (filesystem-backed for now)
+	dir := os.Getenv("BLOG_DIR")
+	if dir == "" {
+		dir = templatePath("content/blog")
+	}
+	showDrafts := os.Getenv("APP_ENV") != "prod"
+	bs, err := blog.NewFilesStore(dir, blog.WithDrafts(showDrafts))
+	if err != nil {
+		return nil, err
+	}
+
 	return &App{
 		tpls:     tpls,
 		staticFS: http.Dir(templatePath("web/static")),
 		cfg:      cfg,
 		log:      newLogger(),
+		blog:     bs,
 	}, nil
 }
 
@@ -61,7 +75,6 @@ func newLogger() *slog.Logger {
 	return slog.New(h).With(slog.String("service", "personal-site"))
 }
 
-
 func cacheControl(next http.Handler) http.Handler {
 	const cc = "public, max-age=31536000, immutable"
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +84,7 @@ func cacheControl(next http.Handler) http.Handler {
 }
 
 func templatePath(rel string) string {
-	_, file, _, _ := runtime.Caller(0) // this file's path
+	_, file, _, _ := runtime.Caller(0)
 	return filepath.Join(filepath.Dir(file), "..", "..", rel)
 }
 
