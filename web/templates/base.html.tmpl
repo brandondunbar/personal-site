@@ -3,51 +3,106 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{block "title" .}}{{.Site.Title}}{{end}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  {{with .Site.Head.MetaDescription}}<meta name="description" content="{{.}}">{{end}}
+  <!-- Pre-paint theme: apply saved theme before CSS to avoid FOUC -->
+  <script>
+    (function(){
+      try {
+        var k = "theme";
+        var v = localStorage.getItem(k);
+        var d = document.documentElement;
+        if (v === "light" || v === "dark") d.setAttribute("data-theme", v);
+      } catch(e){}
+    })();
+  </script>
 
-  {{range .Site.Head.Preloads}}
-  <link rel="preload" href="{{.Href}}" as="{{.As}}">
-  {{end}}
-
-  {{range .Site.Head.Styles}}
-  <link rel="stylesheet" href="{{.}}">
-  {{end}}
-
-  {{block "head" .}}{{end}}
+  {{range .Site.Head.Preloads}}<link rel="preload" href="{{.Href}}" as="{{.As}}">{{end}}
+  {{range .Site.Head.Styles}}<link rel="stylesheet" href="{{.}}">{{end}}
 </head>
 <body>
-  {{block "header" .}}
   <header class="site-header">
-    <div class="container row space-between center">
-      <a href="/" class="brand" aria-label="Home">{{.Site.Header.Brand}}</a>
-      <nav aria-label="Primary">
-        {{range .Site.Header.Nav}}
-          <a href="{{.Href}}" {{if .Class}}class="{{.Class}}"{{end}}>{{.Label}}</a>
-        {{end}}
+    <div class="container nav">
+      <!-- Logo -->
+      <a href="/" class="logo" aria-label="{{.Site.Name}} home">
+        <span class="logo__prompt">
+          <span class="logo__user">dev</span>@<span class="logo__name">brandon_dunbar</span><span class="logo__cursor">:~$</span>
+        </span>
+      </a>
+
+      <nav class="nav-links nav-dir" aria-label="Primary">
+        <a href="/#work">work/</a>
+        <a href="/#services">services/</a>
+        <a href="/#about">about/</a>
+        <a href="/#socials">socials/</a>
+        <a href="/blog">blog/</a>
+
+        <!-- Theme toggle -->
+        <button id="theme-toggle" class="icon-btn" aria-label="Toggle color theme" title="Toggle theme">
+          <!-- Sun (light mode icon) -->
+          <svg class="icon sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.64 5.64 4 4m16 16-1.64-1.64M18.36 5.64 20 4M4 20l1.64-1.64M12 7.5a4.5 4.5 0 1 1 0 9a4.5 4.5 0 0 1 0-9Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <!-- Moon (dark mode icon) -->
+          <svg class="icon moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M21 12.79A8.5 8.5 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" fill="currentColor"/>
+          </svg>
+        </button>
       </nav>
     </div>
   </header>
-  {{end}}
 
-  <main>
+  {{/* === Social Rail (fixed left, config-driven) === */}}
+  {{- $L := or .Site.Links .Config.Links -}}
+  {{- if $L }}
+  <aside class="social-rail" aria-label="Social links">
+    <ul>
+      {{ with $L.GitHub }}
+      <li>
+        <a href="{{ . }}" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
+          {{ template "icon-GitHub" $ }}
+        </a>
+      </li>
+      {{ end }}
+
+      {{ with $L.LinkedIn }}
+      <li>
+        <a href="{{ . }}" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+          {{ template "icon-LinkedIn" $ }}
+        </a>
+      </li>
+      {{ end }}
+
+      {{ with $L.CV }}
+      <li>
+        <a href="{{ . }}" aria-label="CV (PDF)" title="CV (PDF)">
+          {{ template "icon-CV" $ }}
+        </a>
+      </li>
+      {{ end }}
+
+      {{ with $L.LeetCode }}
+      <li>
+        <a href="{{ . }}" target="_blank" rel="noopener" aria-label="LeetCode" title="LeetCode">
+          {{ template "icon-LeetCode" $ }}
+        </a>
+      </li>
+      {{ end }}
+    </ul>
+  </aside>
+  {{- end }}
+
+  <main class="container">
     {{block "content" .}}{{end}}
   </main>
 
-  {{block "footer" .}}
   <footer class="site-footer">
-    <div class="container">
-      <small>© {{.Year}} {{.Site.Name}}. {{.Site.Footer.Note}}</small>
-    </div>
+    <div class="container">© {{.Year}} {{.Site.Name}} — {{.Site.Footer.Note}}</div>
   </footer>
-  {{end}}
 
-  {{range .Site.Head.Scripts}}
-  <script defer src="{{.}}"></script>
-  {{end}}
-  {{block "scripts" .}}{{end}}
+  {{range .Site.Head.Scripts}}<script src="{{.}}" defer></script>{{end}}
 </body>
 </html>
 {{end}}
+

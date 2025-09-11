@@ -1,0 +1,61 @@
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+html,body{margin:0;padding:0}
+body{
+  font:16px/1.65 var(--sans);
+  color:var(--text);
+  background:
+    radial-gradient(1200px 700px at 20% -10%, var(--tint-blue), transparent 60%),
+    radial-gradient(900px 600px at 110% 20%, var(--tint-muted), transparent 55%),
+    var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Reserve space for the scrollbar so content doesn't jump */
+:root {
+  scrollbar-gutter: stable both-edges; /* widest compatibility pattern */
+}
+
+/* Never allow horizontal scroll caused by vw mis-measurements */
+html, body {
+  overflow-x: hidden;
+}
+
+/* If you currently use 100vw on containers/sections, prefer 100% instead */
+.container,
+section,
+header,
+footer {
+  max-width: 100%;
+  /* Avoid width:100vw on layout containers */
+}
+
+/* Optional: always show a vertical scrollbar (older workaround)
+   html { overflow-y: scroll; }  */
+
+
+/* Accessibility */
+:focus-visible{
+  outline:2px solid var(--ring);
+  outline-offset:2px;
+  box-shadow:0 0 0 4px var(--ring-offset);
+  border-radius:var(--radius-xs);
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* Links – use accent for a clean, modern look */
+a{
+  color:var(--accent);
+  text-underline-offset: 3px;
+}
+a:hover{
+  color:var(--text);
+  background:var(--tint-blue);
+  text-decoration: none;
+  border-radius:4px;
+  transition: color .15s ease, background-color .15s ease;
+}
+

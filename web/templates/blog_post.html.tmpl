@@ -1,21 +1,17 @@
 {{define "blog_post"}}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>{{.Post.Title}} — {{.Site.Name}}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preload" href="/static/css/site.css" as="style">
-  <link rel="stylesheet" href="/static/css/site.css">
-</head>
-<body>
-  <main class="container" style="padding:2rem">
-    <article>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{.Post.Title}} — {{.Site.Name}}</title>
+<link rel="stylesheet" href="/static/css/site.css">
+</head><body>
+  <div class="container section">
+    <article class="article">
+      <p class="meta">{{if .Post.Date}}{{.Post.Date.Format "Jan 2, 2006"}} · {{end}}{{range $i, $t := .Post.Tags}}{{if $i}}, {{end}}#{{$t}}{{end}}</p>
       <h1>{{.Post.Title}}</h1>
       <div class="post-body">{{.Post.HTML}}</div>
     </article>
-  </main>
-</body>
-</html>
+    <p style="margin-top:2rem"><a class="btn" href="/blog">← All posts</a></p>
+  </div>
+</body></html>
 {{end}}
 

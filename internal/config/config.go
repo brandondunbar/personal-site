@@ -75,15 +75,16 @@ type Step struct {
 	Text   string `json:"Text"`
 }
 
+type Links struct {
+    GitHub   string `json:"GitHub"`
+    LinkedIn string `json:"LinkedIn"`
+    CV       string `json:"CV"`
+    LeetCode string `json:"LeetCode"` // NEW
+}
+
 type Approach struct {
 	Title string `json:"Title"`
 	Steps []Step `json:"Steps"`
-}
-
-type Links struct {
-	GitHub   string `json:"GitHub"`
-	LinkedIn string `json:"LinkedIn"`
-	CV       string `json:"CV"`
 }
 
 type About struct {

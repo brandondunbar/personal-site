@@ -1,0 +1,73 @@
+/* === HERO === */
+.hero{
+  position: relative;
+  min-height: clamp(520px, 72vh, 820px);
+  display: grid;
+  place-items: center;
+  overflow: clip; /* contain the SVG */
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--bg) 96%, transparent) 0%,
+    color-mix(in oklab, var(--bg) 90%, transparent) 100%
+  );
+}
+
+/* Background SVG */
+.hero-bg{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: color-mix(in oklab, var(--accent) 30%, var(--text) 70%); /* grid color */
+  opacity: .8;
+  z-index: 0;
+  transform: translateZ(0); /* paint hint */
+}
+
+/* Soft drift animation to give it life */
+@keyframes hero-pan {
+  0%   { transform: translate3d(0, 0, 0) scale(1.02); }
+  50%  { transform: translate3d(-2%, -1%, 0) scale(1.02); }
+  100% { transform: translate3d(0, 0, 0) scale(1.02); }
+}
+.hero-bg { animation: hero-pan 28s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce){
+  .hero-bg { animation: none; }
+}
+
+/* Content layout */
+.hero-inner{
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  text-align: left;
+  padding-block: var(--s-6);
+}
+
+.hero .eyebrow{
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-size: .8rem;
+  color: var(--muted);
+  margin: 0 0 var(--s-2);
+}
+
+.hero h1{
+  font-size: clamp(2.2rem, 4vw + 1rem, 4rem);
+  line-height: 1.08;
+  margin: 0 0 var(--s-2);
+  color: var(--text);
+  font-weight: 780;
+}
+
+.hero .subhead{
+  color: color-mix(in oklab, var(--text) 82%, transparent);
+  font-size: clamp(1rem, .6vw + .9rem, 1.25rem);
+  line-height: 1.6;
+  max-width: 60ch;
+  margin: 0 0 var(--s-4);
+}
+
+/* CTA buttons reuse your .btn styles; nudge spacing */
+.hero-cta{ display: flex; gap: var(--s-2); flex-wrap: wrap; }
+

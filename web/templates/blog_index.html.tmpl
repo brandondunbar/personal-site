@@ -1,25 +1,24 @@
 {{define "blog_index"}}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Blog — {{.Site.Name}}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preload" href="/static/css/site.css" as="style">
-  <link rel="stylesheet" href="/static/css/site.css">
-</head>
-<body>
-  <main class="container" style="padding:2rem">
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blog — {{.Site.Name}}</title>
+<link rel="stylesheet" href="/static/css/site.css">
+</head><body>
+  <div class="container section">
     <h1>Blog</h1>
-    <ul>
+    <div class="grid">
       {{range .Posts}}
-        <li><a href="/blog/{{.Slug}}">{{.Title}}</a></li>
+        <a class="card" href="/blog/{{.Slug}}">
+          <h3>{{.Title}}</h3>
+          <div class="meta">{{if .Date}}{{.Date.Format "Jan 2, 2006"}} · {{end}}{{len .Tags}} tags</div>
+          {{if .Summary}}<p>{{.Summary}}</p>{{end}}
+        </a>
       {{else}}
-        <li>No posts yet.</li>
+        <div class="card">No posts yet.</div>
       {{end}}
-    </ul>
-  </main>
-</body>
-</html>
+    </div>
+    <p style="margin-top:2rem"><a class="btn" href="/">← Back</a></p>
+  </div>
+</body></html>
 {{end}}
 

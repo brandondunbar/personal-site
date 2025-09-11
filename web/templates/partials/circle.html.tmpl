@@ -1,0 +1,46 @@
+{{/* web/templates/partials/circle.home.html */}}
+{{ define "circle" }}
+!-- All shapes live in one group that rotates in place -->
+  <g id="hero-construct" opacity=".85">
+    <!-- Spin-in-place (precise center) --> 
+    <animateTransform
+      attributeName="transform"
+      type="rotate"
+      from="0 1300 350"
+      to="360 1300 350"
+      dur="24s"
+      repeatCount="indefinite" />
+
+    <!-- ===== OUTER BOUNDARY CIRCLE ===== -->
+    <circle cx="1300" cy="350" r="160"
+            fill="none"
+            stroke="url(#hero-accent)"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-dasharray="3 8"/>
+
+    <!-- ===== INNER OVERLAPPING CIRCLES ===== -->
+    <circle cx="1300" cy="420" r="90" fill="none" stroke="url(#hero-accent)" stroke-width="2"/>
+    <circle cx="1300" cy="280" r="90" fill="none" stroke="url(#hero-accent)" stroke-width="2"/>
+    <circle cx="1230" cy="350" r="90" fill="none" stroke="url(#hero-accent)" stroke-width="2"/>
+    <circle cx="1370" cy="350" r="90" fill="none" stroke="url(#hero-accent)" stroke-width="2"/>
+
+    <!-- ===== TRIANGLE: vertices on the outer circle =====
+         Angles: 10°, 140°, 260° on a circle centered at (1300, 350) with R=160 -->
+    <path d="
+    M 1300 190
+    L 1161.5 430
+    L 1438.5 430
+    Z"
+    fill="none"
+    stroke="url(#hero-accent)"
+    stroke-width="2.5"
+    stroke-dasharray="5 8"
+    stroke-linejoin="round"/>
+  </g>
+
+  <!-- Tiny center dot for subtle anchor cue -->
+  <circle cx="1300" cy="350" r="2.5" fill="var(--accent)" opacity=".85"/>
+
+{{ end }}
+

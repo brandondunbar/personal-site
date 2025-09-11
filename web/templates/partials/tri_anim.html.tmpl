@@ -1,0 +1,226 @@
+{{/* web/templates/partials/tri_anim.html.tmpl */}}
+{{define "tri_anim"}}
+<defs>
+    <!-- Equilateral triangle centered at (0,0); side ≈ 400 -->
+    <g id="tri" viewBox="-220 -260 440 520">
+      <!-- top = (0,-2h/3), bottoms = (±a/2, h/3) with a=400, h≈346.41 -->
+      <polygon points="0,-230.94 -200,115.47 200,115.47"
+               fill="none" stroke="url(#hero-accent)" stroke-width="2"
+               vector-effect="non-scaling-stroke"/>
+    </g>
+  </defs>
+
+<g transform="translate(905 700) scale(0.7)">
+  <!-- Loop clock: everything else begins relative to this and re-triggers on repeats -->
+  <animate id="clock" attributeName="opacity" from="1" to="1"
+           begin="0s" dur="15.55s" repeatCount="indefinite" />
+  <!-- Triangle 1 -->
+  <g id="rotate_n1">
+    <g id="scale_n1">
+      <use href="#tri" id="n1">
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+5.15s; clock.repeatEvent+5.15s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+11.55s; clock.repeatEvent+11.55s" dur=".01s" fill="freeze" />
+      </use>
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+4.35s; clock.repeatEvent+4.35s" dur="0.80s"
+                        from="1.00000000" to="0.75000000" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+11.55s; clock.repeatEvent+11.55s" dur="0.80s"
+                        from="0.75000000" to="1.00000000" fill="freeze" />
+    </g>
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+4.35s; clock.repeatEvent+4.35s" dur="0.80s"
+                    from="0.0 0 0" to="12.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+11.55s; clock.repeatEvent+11.55s" dur="0.80s"
+                    from="12.0 0 0" to="0.0 0 0" fill="freeze" />
+  </g>
+
+  <!-- Triangle 2 -->
+  <g id="rotate_n2">
+    <g id="scale_n2">
+      <use href="#tri" id="n2" opacity="0">
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+0.35s; clock.repeatEvent+0.35s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+5.95s; clock.repeatEvent+5.95s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+10.75s; clock.repeatEvent+10.75s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+15.55s; clock.repeatEvent+15.55s" dur=".01s" fill="freeze" />
+      </use>
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+0.35s; clock.repeatEvent+0.35s" dur="0.80s"
+                        from="1.00000000" to="0.75000000" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+5.15s; clock.repeatEvent+5.15s" dur="0.80s"
+                        from="0.75000000" to="0.56250000" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+10.75s; clock.repeatEvent+10.75s" dur="0.80s"
+                        from="0.56250000" to="0.75000000" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+14.75s; clock.repeatEvent+14.75s" dur="0.80s"
+                        from="0.75000000" to="1.00000000" fill="freeze" />
+    </g>
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+0.35s; clock.repeatEvent+0.35s" dur="0.80s"
+                    from="0.0 0 0" to="12.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+5.15s; clock.repeatEvent+5.15s" dur="0.80s"
+                    from="12.0 0 0" to="24.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+10.75s; clock.repeatEvent+10.75s" dur="0.80s"
+                    from="24.0 0 0" to="12.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+14.75s; clock.repeatEvent+14.75s" dur="0.80s"
+                    from="12.0 0 0" to="0.0 0 0" fill="freeze" />
+  </g>
+
+  <!-- Triangle 3 -->
+  <g id="rotate_n3">
+    <g id="scale_n3">
+      <use href="#tri" id="n3" opacity="0">
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+1.15s; clock.repeatEvent+1.15s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+6.75s; clock.repeatEvent+6.75s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+9.95s; clock.repeatEvent+9.95s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+14.75s; clock.repeatEvent+14.75s" dur=".01s" fill="freeze" />
+      </use>
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+1.15s; clock.repeatEvent+1.15s" dur="0.80s"
+                        from="0.75000000" to="0.56250000" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+5.95s; clock.repeatEvent+5.95s" dur="0.80s"
+                        from="0.56250000" to="0.42187500" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+9.95s; clock.repeatEvent+9.95s" dur="0.80s"
+                        from="0.42187500" to="0.56250000" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+13.95s; clock.repeatEvent+13.95s" dur="0.80s"
+                        from="0.56250000" to="0.75000000" fill="freeze" />
+    </g>
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+1.15s; clock.repeatEvent+1.15s" dur="0.80s"
+                    from="12.0 0 0" to="24.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+5.95s; clock.repeatEvent+5.95s" dur="0.80s"
+                    from="24.0 0 0" to="36.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+9.95s; clock.repeatEvent+9.95s" dur="0.80s"
+                    from="36.0 0 0" to="24.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+13.95s; clock.repeatEvent+13.95s" dur="0.80s"
+                    from="24.0 0 0" to="12.0 0 0" fill="freeze" />
+  </g>
+
+  <!-- Triangle 4 -->
+  <g id="rotate_n4">
+    <g id="scale_n4">
+      <use href="#tri" id="n4" opacity="0">
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+1.95s; clock.repeatEvent+1.95s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+7.55s; clock.repeatEvent+7.55s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+9.15s; clock.repeatEvent+9.15s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+13.95s; clock.repeatEvent+13.95s" dur=".01s" fill="freeze" />
+      </use>
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+1.95s; clock.repeatEvent+1.95s" dur="0.80s"
+                        from="0.56250000" to="0.42187500" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+6.75s; clock.repeatEvent+6.75s" dur="0.80s"
+                        from="0.42187500" to="0.31640625" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+9.15s; clock.repeatEvent+9.15s" dur="0.80s"
+                        from="0.31640625" to="0.42187500" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+13.15s; clock.repeatEvent+13.15s" dur="0.80s"
+                        from="0.42187500" to="0.56250000" fill="freeze" />
+    </g>
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+1.95s; clock.repeatEvent+1.95s" dur="0.80s"
+                    from="24.0 0 0" to="36.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+6.75s; clock.repeatEvent+6.75s" dur="0.80s"
+                    from="36.0 0 0" to="48.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+9.15s; clock.repeatEvent+9.15s" dur="0.80s"
+                    from="48.0 0 0" to="36.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+13.15s; clock.repeatEvent+13.15s" dur="0.80s"
+                    from="36.0 0 0" to="24.0 0 0" fill="freeze" />
+  </g>
+
+  <!-- Triangle 5 -->
+  <g id="rotate_n5">
+    <g id="scale_n5">
+      <use href="#tri" id="n5" opacity="0">
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+2.75s; clock.repeatEvent+2.75s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+8.35s; clock.repeatEvent+8.35s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+8.35s; clock.repeatEvent+8.35s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+13.15s; clock.repeatEvent+13.15s" dur=".01s" fill="freeze" />
+      </use>
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+2.75s; clock.repeatEvent+2.75s" dur="0.80s"
+                        from="0.42187500" to="0.31640625" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+7.55s; clock.repeatEvent+7.55s" dur="0.80s"
+                        from="0.31640625" to="0.23730469" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+8.35s; clock.repeatEvent+8.35s" dur="0.80s"
+                        from="0.23730469" to="0.31640625" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+12.35s; clock.repeatEvent+12.35s" dur="0.80s"
+                        from="0.31640625" to="0.42187500" fill="freeze" />
+    </g>
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+2.75s; clock.repeatEvent+2.75s" dur="0.80s"
+                    from="36.0 0 0" to="48.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+7.55s; clock.repeatEvent+7.55s" dur="0.80s"
+                    from="48.0 0 0" to="60.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+8.35s; clock.repeatEvent+8.35s" dur="0.80s"
+                    from="60.0 0 0" to="48.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+12.35s; clock.repeatEvent+12.35s" dur="0.80s"
+                    from="48.0 0 0" to="36.0 0 0" fill="freeze" />
+  </g>
+
+  <!-- Triangle 6 -->
+  <g id="rotate_n6">
+    <g id="scale_n6">
+      <use href="#tri" id="n6" opacity="0">
+        <animate attributeName="opacity" from="0" to="1"
+                 begin="clock.begin+3.55s; clock.repeatEvent+3.55s" dur=".01s" fill="freeze" />
+        <animate attributeName="opacity" from="1" to="0"
+                 begin="clock.begin+12.35s; clock.repeatEvent+12.35s" dur=".01s" fill="freeze" />
+      </use>
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+3.55s; clock.repeatEvent+3.55s" dur="0.80s"
+                        from="0.31640625" to="0.23730469" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale"
+                        begin="clock.begin+11.55s; clock.repeatEvent+11.55s" dur="0.80s"
+                        from="0.23730469" to="0.31640625" fill="freeze" />
+    </g>
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+3.55s; clock.repeatEvent+3.55s" dur="0.80s"
+                    from="48.0 0 0" to="60.0 0 0" fill="freeze" />
+  <animateTransform attributeName="transform" type="rotate"
+                    begin="clock.begin+11.55s; clock.repeatEvent+11.55s" dur="0.80s"
+                    from="60.0 0 0" to="48.0 0 0" fill="freeze" />
+  </g>
+
+  </g>
+{{end}}

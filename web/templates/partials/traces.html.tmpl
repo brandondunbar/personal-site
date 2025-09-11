@@ -1,0 +1,74 @@
+{{/* web/templates/partials/traces.html.tmpl */}}
+{{define "traces"}} 
+
+<!-- Trace 1: from bottom-left vertex -> left/mid pad -->
+  <path d="M 1140 330
+	   H 1040
+           V 150"
+        fill="none"
+        stroke="url(#hero-accent)"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+  <circle cx="1040" cy="150" r="6" fill="var(--accent)" opacity=".95"/>
+
+  <path d="M 1040 200
+	   V 180
+           H 800"
+        fill="none"
+        stroke="url(#hero-accent)"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+  <!-- Trace 2: Branching -->
+  <path d="M 1460 360
+           H 1540
+           V 290"
+        fill="none"
+        stroke="url(#hero-accent)"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+  <path d="M 1540 360
+           V 290
+           H 1600"
+        fill="none"
+        stroke="url(#hero-accent)"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+  <circle cx="1600" cy="290" r="6" fill="var(--accent)" opacity=".95"/>
+
+  <path d="M 1540 360
+           V 380
+           H 1650"
+        fill="none"
+        stroke="url(#hero-accent)"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+  <circle cx="1650" cy="380" r="6" fill="var(--accent)" opacity=".95"/>
+
+  <!-- Trace 3 -->
+  <path d="M 1300 510
+           V 620
+           H 1200"
+        fill="none"
+        stroke="url(#hero-accent)"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+   <circle cx="1200" cy="620" r="6" fill="var(--accent)" opacity=".95" />
+
+  <path d="M 1300 620
+           V 700
+           H 1000"
+        fill="none"
+        stroke="url(#hero-accent)"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+{{ end }}

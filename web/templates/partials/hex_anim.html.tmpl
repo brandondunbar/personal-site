@@ -1,0 +1,92 @@
+{{/* web/templates/partials/hex_anim.html.tmpl */}}
+{{define "hex_anim"}}
+<!-- Put this <style> anywhere inside your <svg> (e.g., under <defs>) -->
+<style>
+  /* Subtle pulse from center outward */
+  .h {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: hexPulse 1.9s ease-in-out infinite;
+    animation-delay: calc(var(--d, 0) * 120ms); /* ring-based delay */
+  }
+  @keyframes hexPulse {
+    0%, 100% { transform: scale(1);    opacity: 1;   }
+    50%      { transform: scale(0.93); opacity: 0.65;}
+  }
+</style>
+
+<!-- Your original hex (unchanged) -->
+<defs>
+  <g id="hex">
+    <polygon points="
+      18,0
+      9,15.588
+      -9,15.588
+      -18,0
+      -9,-15.588
+      9,-15.588"
+      fill="none"
+      stroke="url(#hero-accent)"
+      stroke-width="2"
+      vector-effect="non-scaling-stroke" />
+  </g>
+</defs>
+
+<!-- 2–3–2 grid with mathematically precise spacing for flat-top hexes (r=45) -->
+<!-- Center chosen at (680,180) for convenience -->
+<!-- Middle row (3) at y=180 -->
+<g transform="translate(602.06 180)">
+  <g class="h" style="--d:1">
+    <g transform="rotate(90) scale(2.5)">
+      <use href="#hex" />
+    </g>
+  </g>
+</g>
+<g transform="translate(680 180)">
+  <g class="h" style="--d:0"><!-- center -->
+    <g transform="rotate(90) scale(2.5)">
+      <use href="#hex" />
+    </g>
+  </g>
+</g>
+<g transform="translate(757.94 180)">
+  <g class="h" style="--d:1">
+    <g transform="rotate(90) scale(2.5)">
+      <use href="#hex" />
+    </g>
+  </g>
+</g>
+
+<!-- Top row (2) at y=112.5, offset by +stepX/2 -->
+<g transform="translate(641.03 112.5)">
+  <g class="h" style="--d:1">
+    <g transform="rotate(90) scale(2.5)">
+      <use href="#hex" />
+    </g>
+  </g>
+</g>
+<g transform="translate(718.97 112.5)">
+  <g class="h" style="--d:1">
+    <g transform="rotate(90) scale(2.5)">
+      <use href="#hex" />
+    </g>
+  </g>
+</g>
+
+<!-- Bottom row (2) at y=247.5, same horizontal offset -->
+<g transform="translate(641.03 247.5)">
+  <g class="h" style="--d:1">
+    <g transform="rotate(90) scale(2.5)">
+      <use href="#hex" />
+    </g>
+  </g>
+</g>
+<g transform="translate(718.97 247.5)">
+  <g class="h" style="--d:1">
+    <g transform="rotate(90) scale(2.5)">
+      <use href="#hex" />
+    </g>
+  </g>
+</g>
+
+{{end}}

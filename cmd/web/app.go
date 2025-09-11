@@ -29,12 +29,17 @@ type TemplateData struct {
 
 func NewApp() (*App, error) {
 	tpls, err := template.ParseFiles(
+		templatePath("web/templates/icons.html.tmpl"),
 		templatePath("web/templates/base.html.tmpl"),
 		templatePath("web/templates/home.html.tmpl"),
 		templatePath("web/templates/blog_index.html.tmpl"),
 		templatePath("web/templates/blog_post.html.tmpl"),
-		templatePath("web/templates/404.html.tmpl"), // optional
-		templatePath("web/templates/500.html.tmpl"), // optional
+		templatePath("web/templates/404.html.tmpl"), 
+		templatePath("web/templates/500.html.tmpl"),
+		templatePath("web/templates/partials/tri_anim.html.tmpl"),
+		templatePath("web/templates/partials/hex_anim.html.tmpl"),
+		templatePath("web/templates/partials/traces.html.tmpl"),
+		templatePath("web/templates/partials/circle.html.tmpl"),
 	)
 	if err != nil {
 		return nil, err

@@ -1,0 +1,92 @@
+/* Header / Navbar */
+.site-header{
+  position: sticky; top: 0; z-index: 10;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: none; /* keep crisp; add blur if you want later */
+}
+.site-header .container{
+  height: 56px;
+  display: flex; align-items: center;
+  gap: 1rem;
+}
+
+/* Right-justify the link group; logo stays on the left */
+.site-header nav{
+  margin-left: auto;
+  display: flex; align-items: center;
+  white-space: nowrap;
+  gap: 1.2rem;
+  font-family: var(--mono);
+  text-transform: lowercase;
+  line-height: 1;
+}
+
+/* Terminal-style logo (static, no typing/cursor) */
+.site-header .logo{
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  letter-spacing: .2px;
+  display: inline-flex; align-items: center; gap: .4ch;
+  color: var(--nav-logo);            /* neutral logo color */
+  text-decoration: none;
+}
+.logo__prompt{ color: var(--nav-fg); user-select: none; } /* dev@ + :~$ in accent */
+
+/* Header links */
+.site-header nav a{
+  color: var(--nav-fg);
+  text-decoration: none;
+  padding: 4px 6px;                  /* enables soft hover chip */
+  margin: 0;
+  border-radius: 6px;
+}
+.site-header nav a:hover{
+  color: var(--text);
+  background: var(--tint-blue);      /* soft, modern hover */
+  text-decoration: none;
+}
+
+/* Icon link (GitHub) — icon only, no hover effect */
+.icon{ width: 18px; height: 18px; vertical-align: middle; display: inline-block; }
+.nav-ico{
+  color: var(--nav-fg);
+  display: inline-flex; align-items: center;
+  padding: 0; margin-left: 1rem;
+  opacity: 1;
+}
+.nav-ico .icon{ width: 20px; height: 20px; }
+.nav-ico:hover{ color: var(--nav-fg); opacity: 1; } /* identical hover */
+
+/* Emphasize the name in the terminal logo */
+.logo__user{ opacity: .85; font-weight: 500; }
+.logo__name{
+  font-weight: 750;
+  letter-spacing: .1px;
+}
+
+/* Tiny brightness lift for the name on dark bars */
+@supports (color: color-mix(in oklab, black, white)){
+  .logo__name{
+    color: color-mix(in oklab, var(--nav-logo) 88%, white 12%);
+  }
+}
+
+#theme-toggle {
+  inline-size: 40px; 
+  block-size: 40px;
+  display: inline-grid;
+  place-items: center;
+}
+
+#theme-toggle .icon {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+
+#theme-toggle .sun { opacity: var(--sun-vis, 1); }
+#theme-toggle .moon { opacity: var(--moon-vis, 0); }
+
+
+

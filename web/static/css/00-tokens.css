@@ -1,0 +1,105 @@
+/* web/static/css/00-tokens.css */
+/* Modern Minimal — neutral dark with calm blue accent */
+
+/* Base: default to dark tokens */
+:root{
+  /* ---- Color Tokens (Dark) ---- */
+  --bg:#101317;        /* page background */
+  --bg-alt:#0b0d10;    /* alt panels / stripes */
+  --surface:#12161b;   /* cards, header bar */
+  --border:#1b2128;
+
+  --text:#e6e8eb;      /* primary text */
+  --muted:#7a8694;     /* secondary text */
+
+  /* Brand / Accent (calm blue) */
+  --brand-600:#0a5fb6;
+  --brand-500:#0f6ad9;
+  --brand-400:#2b7fe6;
+  --brand:#0f6ad9;
+
+  --accent:#2f81f7;      /* link, focus, key UI */
+  --accent-600:#0a5fb6;
+
+  /* Elevation & radii */
+  --card:var(--surface);
+  --radius-xs:8px; --radius-sm:12px; --radius-md:14px; --radius-lg:20px;
+  --shadow:0 10px 28px rgba(0,0,0,.35);
+  --shadow-sm:0 4px 14px rgba(0,0,0,.25);
+
+  /* Focus ring */
+  --ring:color-mix(in oklab, var(--accent) 60%, white 0%);
+  --ring-offset:color-mix(in oklab, var(--accent) 20%, transparent 80%);
+
+  /* Spacing (8px rhythm) */
+  --s-1:8px; --s-2:16px; --s-3:24px; --s-4:32px; --s-5:48px; --s-6:64px;
+
+  /* Background tints ( subtle accents for chips / badges ) */
+  --tint-blue:color-mix(in oklab, var(--accent) 12%, transparent);
+  --tint-muted:rgba(122,134,148,.10);
+
+  /* Typography stacks */
+  --mono:"Ubuntu Mono","DejaVu Sans Mono","Liberation Mono","SFMono-Regular","Menlo","Consolas",monospace;
+  --sans:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+
+  /* Navbar theming (terminal prompt + dirs) */
+  --nav-fg:var(--accent);  /* color for prompt highlights & link hover */
+  --nav-logo:var(--text);  /* logo text/icon; set to --nav-fg to accent it */
+}
+
+/* Light tokens activated by the toggle via <html data-theme="light"> */
+html[data-theme="light"]{
+  --bg:#f7fafc; --bg-alt:#ffffff; --surface:#ffffff; --border:#e6eaf0;
+  --text:#0f141a; --muted:#586574;
+
+  --brand-600:#0a5fb6;
+  --brand-500:#0f6ad9;
+  --brand-400:#2b7fe6;
+  --brand:#0f6ad9;
+
+  --accent:#0069ca;
+  --accent-600:#0a5fb6;
+
+  --shadow:0 12px 28px rgba(9,16,28,.08);
+  --shadow-sm:0 6px 16px rgba(9,16,28,.06);
+
+  --ring:color-mix(in oklab, var(--accent) 55%, black 0%);
+  --ring-offset:color-mix(in oklab, var(--accent) 15%, transparent 85%);
+
+  --tint-blue:color-mix(in oklab, var(--accent) 10%, transparent);
+  --tint-muted:rgba(88,101,116,.10);
+
+  /* Light-mode nav */
+  --nav-fg:var(--accent);
+  --nav-logo:#0f141a;
+}
+
+/* Optional: if NO user choice yet (no data-theme set),
+   honor the OS preference as a default. */
+@media (prefers-color-scheme: light){
+  html:not([data-theme]){
+    --bg:#f7fafc; --bg-alt:#ffffff; --surface:#ffffff; --border:#e6eaf0;
+    --text:#0f141a; --muted:#586574;
+
+    --brand-600:#0a5fb6;
+    --brand-500:#0f6ad9;
+    --brand-400:#2b7fe6;
+    --brand:#0f6ad9;
+
+    --accent:#0069ca;
+    --accent-600:#0a5fb6;
+
+    --shadow:0 12px 28px rgba(9,16,28,.08);
+    --shadow-sm:0 6px 16px rgba(9,16,28,.06);
+
+    --ring:color-mix(in oklab, var(--accent) 55%, black 0%);
+    --ring-offset:color-mix(in oklab, var(--accent) 15%, transparent 85%);
+
+    --tint-blue:color-mix(in oklab, var(--accent) 10%, transparent);
+    --tint-muted:rgba(88,101,116,.10);
+
+    --nav-fg:var(--accent);
+    --nav-logo:#0f141a;
+  }
+}
+
