@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-/* ---------- Site content (unchanged API) ---------- */
+/* ---------- Site content (backward-compatible API) ---------- */
 
 type Preload struct {
 	Href string `json:"Href"`
@@ -45,18 +45,110 @@ type Hero struct {
 	Actions []Action `json:"Actions"`
 }
 
+/* ---------- NEW Work schema (preferred) ---------- */
+
+type ProjectLink struct {
+	Href     string `json:"Href"`
+	Label    string `json:"Label"`
+	Disabled bool   `json:"Disabled,omitempty"`
+}
+
+type Project struct {
+	Title     string        `json:"Title"`
+	Blurb     string        `json:"Blurb,omitempty"` // Preferred short description
+	Body      string        `json:"Body,omitempty"`  // Legacy fallback -> mapped into Blurb if Blurb empty
+	Role      string        `json:"Role,omitempty"`
+	Year      int           `json:"Year,omitempty"`
+	Tech      []string      `json:"Tech,omitempty"`      // Preferred: array of tech badges
+	Links     []ProjectLink `json:"Links,omitempty"`     // Preferred: array of links
+	Thumb     string        `json:"Thumb,omitempty"`
+	Images    []string      `json:"Images,omitempty"`
+	Highlights []string     `json:"Highlights,omitempty"`
+}
+
+/* ---------- Legacy Work schema (auto-mapped) ---------- */
+
 type WorkCard struct {
 	Title    string `json:"Title"`
-	Tech     string `json:"Tech"`
+	Tech     string `json:"Tech"` // Legacy: single string ("Go · Postgres · Docker")
 	Body     string `json:"Body"`
 	LinkHref string `json:"LinkHref"`
 	LinkText string `json:"LinkText"`
 	Disabled bool   `json:"Disabled,omitempty"`
 }
 
+/* ---------- Work container supporting both schemas ---------- */
+
 type Work struct {
-	Title string     `json:"Title"`
-	Cards []WorkCard `json:"Cards"`
+	Title    string    `json:"Title"`
+	Intro    string    `json:"Intro,omitempty"`
+	Projects []Project `json:"Projects,omitempty"` // NEW schema
+	// Legacy field still accepted in JSON; mapped in UnmarshalJSON:
+	Cards []WorkCard `json:"Cards,omitempty"`
+}
+
+func (w *Work) UnmarshalJSON(b []byte) error {
+	// Shadow type to avoid recursion
+	type rawWork Work
+	var rw rawWork
+	if err := json.Unmarshal(b, &rw); err != nil {
+		return err
+	}
+
+	// If Projects already provided (new schema), prefer it
+	if len(rw.Projects) > 0 {
+		*w = Work(rw)
+		return nil
+	}
+
+	// Otherwise, map legacy Cards -> Projects
+	projs := make([]Project, 0, len(rw.Cards))
+	for _, c := range rw.Cards {
+		p := Project{
+			Title: c.Title,
+			// Prefer Blurb; legacy uses Body, so map Body -> Blurb
+			Blurb: c.Body,
+			Tech:  splitTechString(c.Tech),
+			Links: []ProjectLink{
+				{
+					Href:     c.LinkHref,
+					Label:    c.LinkText,
+					Disabled: c.Disabled,
+				},
+			},
+			// Thumb/Images/Highlights/Role/Year left empty (legacy had none)
+		}
+		projs = append(projs, p)
+	}
+
+	w.Title = rw.Title
+	w.Intro = rw.Intro
+	w.Projects = projs
+	// Keep legacy Cards populated too (harmless), though not required:
+	w.Cards = rw.Cards
+	return nil
+}
+
+func splitTechString(s string) []string {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return nil
+	}
+	// Accept common separators: dot (·), comma, pipe, slash
+	seps := []string{"·", ",", "|", "/"}
+	// Normalize all seps to comma
+	for _, sep := range seps {
+		s = strings.ReplaceAll(s, sep, ",")
+	}
+	parts := strings.Split(s, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p != "" {
+			out = append(out, p)
+		}
+	}
+	return out
 }
 
 type ServicesColumn struct {
@@ -76,10 +168,10 @@ type Step struct {
 }
 
 type Links struct {
-    GitHub   string `json:"GitHub"`
-    LinkedIn string `json:"LinkedIn"`
-    CV       string `json:"CV"`
-    LeetCode string `json:"LeetCode"` // NEW
+	GitHub   string `json:"GitHub"`
+	LinkedIn string `json:"LinkedIn"`
+	CV       string `json:"CV"`
+	LeetCode string `json:"LeetCode"`
 }
 
 type Approach struct {

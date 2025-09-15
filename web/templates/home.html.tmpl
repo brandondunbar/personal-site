@@ -1,42 +1,40 @@
 {{define "content"}}
-{{/* Pull hero from config; fall back gracefully using `or` (first truthy) */}}
-{{- $H := or .Site.Hero .Config.Hero -}}
-{{- $Eyebrow := or .Site.Tagline .Config.Tagline "scalable solutions" -}}
+{{/* Pull hero from site config; provide safe defaults */}}
+{{- $H := .Site.Hero -}}
+{{- $Eyebrow := or .Site.Tagline "Robust. Modular. Readable." -}}
 
 <section class="hero">
   <!-- Decorative background SVG -->
-<svg class="hero-bg" viewBox="0 0 1600 900" aria-hidden="true" focusable="false" role="img">
-  <defs>
-    <pattern id="hero-grid" width="48" height="48" patternUnits="userSpaceOnUse">
-      <path d="M48 0H0V48" fill="none" stroke="currentColor" stroke-opacity=".12"/>
-    </pattern>
-    <linearGradient id="hero-accent" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%"  stop-color="var(--accent)" stop-opacity=".9"/>
-      <stop offset="100%" stop-color="var(--accent-600)" stop-opacity=".7"/>
-    </linearGradient>
-  </defs>
+  <svg class="hero-bg" viewBox="0 0 1600 900" aria-hidden="true" focusable="false" role="img">
+    <defs>
+      <pattern id="hero-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+        <path d="M48 0H0V48" fill="none" stroke="currentColor" stroke-opacity=".12"/>
+      </pattern>
+      <linearGradient id="hero-accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%"  stop-color="var(--accent)" stop-opacity=".9"/>
+        <stop offset="100%" stop-color="var(--accent-600)" stop-opacity=".7"/>
+      </linearGradient>
+    </defs>
 
-  <!-- Blueprint grid -->
-  <rect width="1600" height="900" fill="url(#hero-grid)"/>
+    <!-- Blueprint grid -->
+    <rect width="1600" height="900" fill="url(#hero-grid)"/>
 
-  <!-- ===== Circle ===== -->
-  {{ template "circle" . }}             
-                                                                         
-  <!-- ===== PCB-style traces ===== -->
-  {{ template "traces" . }}          
-                                                                                    
-  <!-- ===== Triangle Animation ===== -->
-  {{ template "tri_anim" . }}                                                       
-                                                                                    
-  <!-- ===== Hexagon Animation ===== -->                          
-  {{ template "hex_anim" . }}
+    <!-- ===== Circle ===== -->
+    {{ template "circle" . }}
 
-</svg>
+    <!-- ===== PCB-style traces ===== -->
+    {{ template "traces" . }}
 
+    <!-- ===== Triangle Animation ===== -->
+    {{ template "tri_anim" . }}
+
+    <!-- ===== Hexagon Animation ===== -->
+    {{ template "hex_anim" . }}
+  </svg>
 
   <!-- Content -->
   <div class="hero-inner container">
-    {{- if $Eyebrow }}<p class="eyebrow">{{ $Eyebrow }}</p>{{ end }}
+    {{- with $Eyebrow }}<p class="eyebrow">{{ . }}</p>{{ end }}
 
     <h1>
       {{- with $H.Title -}}
@@ -66,5 +64,9 @@
     </div>
   </div>
 </section>
+
+{{/* Selected Work — partial expects a Work object as root */}}
+{{ template "partials/project-cards" .Site.Work }}
+
 {{end}}
 

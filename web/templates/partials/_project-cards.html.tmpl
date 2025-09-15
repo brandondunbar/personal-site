@@ -1,0 +1,72 @@
+{{ define "partials/project-cards" }}
+<section id="work" class="section work">
+  <div class="container">
+    <header class="section-head">
+      <h2 class="eyebrow">{{ or .Title "Project Showcase" }}</h2>
+      {{- with .Intro }}<p class="lede">{{ . }}</p>{{ end }}
+    </header>
+
+    <!-- Rail wrapper enables carousel on narrow screens -->
+    <div class="project-rail">
+      <button class="rail-btn prev" aria-label="Previous projects" hidden>‹</button>
+
+      <!-- Grid/rail content -->
+      <div class="project-grid" role="list">
+        {{- $work := .Projects -}}
+        {{- if not $work }}
+          <p class="muted">(No projects found. Populate <code>Work.Projects</code> in your config.)</p>
+        {{- end }}
+
+        {{- range $proj := $work }}
+        <details class="project-card" role="listitem">
+          <summary class="project-summary">
+            <div class="summary-text">
+              <h3 class="project-title">{{ $proj.Title }}</h3>
+              {{- with $proj.Tech }}
+              <ul class="tech-list">
+                {{- range $t := . }}<li class="badge">{{ $t }}</li>{{ end }}
+              </ul>
+              {{- end }}
+            </div>
+            <span class="chevron" aria-hidden="true"></span>
+          </summary>
+
+          <div class="project-body">
+            {{- with (or $proj.Blurb $proj.Body) }}<p class="project-blurb">{{ . }}</p>{{ end }}
+
+            {{- with $proj.Highlights }}
+            <ul class="highlights">
+              {{- range $h := . }}<li>{{ $h }}</li>{{ end }}
+            </ul>
+            {{- end }}
+
+            {{- with $proj.Images }}
+            <div class="gallery">
+              {{- range $src := . }}
+                <figure><img src="{{ $src }}" loading="lazy" decoding="async" alt="{{ $proj.Title }} screenshot" /></figure>
+              {{- end }}
+            </div>
+            {{- end }}
+
+            {{- with $proj.Links }}
+            <div class="actions">
+              {{- range $a := . }}
+                {{- if $a.Disabled }}
+                  <span class="btn btn--ghost is-disabled" aria-disabled="true">{{ $a.Label }}</span>
+                {{- else }}
+                  <a class="btn btn--ghost" href="{{ $a.Href }}">{{ $a.Label }}</a>
+                {{- end }}
+              {{- end }}
+            </div>
+            {{- end }}
+          </div>
+        </details>
+        {{- end }}
+      </div>
+
+      <button class="rail-btn next" aria-label="Next projects" hidden>›</button>
+    </div>
+  </div>
+</section>
+{{ end }}
+
