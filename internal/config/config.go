@@ -174,10 +174,20 @@ type Links struct {
 	LeetCode string `json:"LeetCode"`
 }
 
-type Approach struct {
-	Title string `json:"Title"`
-	Steps []Step `json:"Steps"`
+type Book struct {
+	Title     string `json:"Title"`
+	Author    string `json:"Author"`
+	Cover     string `json:"Cover"`
+	URL       string `json:"URL"`
+	IsReading bool   `json:"IsReading"`
 }
+
+type Bookshelf struct {
+	ID    string `json:"ID"`
+	Title string `json:"Title"`
+	Books []Book `json:"Books"`
+}
+
 
 type About struct {
 	Title      string   `json:"Title"`
@@ -206,12 +216,13 @@ type Config struct {
 	Hero     Hero     `json:"Hero"`
 	Work     Work     `json:"Work"`
 	Services Services `json:"Services"`
-	Approach Approach `json:"Approach"`
 	About    About    `json:"About"`
 	Links    Links    `json:"Links"`
 	Contact  Contact  `json:"Contact"`
 	Footer   Footer   `json:"Footer"`
+	Bookshelf Bookshelf `json:"Bookshelf"`
 }
+
 
 // LoadConfig reads site content JSON and applies env overrides.
 func LoadConfig(path string) (Config, error) {

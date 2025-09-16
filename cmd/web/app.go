@@ -40,6 +40,8 @@ func NewApp() (*App, error) {
 		templatePath("web/templates/partials/hex_anim.html.tmpl"),
 		templatePath("web/templates/partials/traces.html.tmpl"),
 		templatePath("web/templates/partials/circle.html.tmpl"),
+		templatePath("web/templates/partials/_project-cards.html.tmpl"),
+		templatePath("web/templates/partials/_bookshelf.html.tmpl"),
 	)
 	if err != nil {
 		return nil, err
