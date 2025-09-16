@@ -84,7 +84,6 @@
    Social Rail
    ========================= */
 :root { color-scheme: light dark }                   /* prevent icon flash */
-html:not(.theme-ready) #theme-toggle .icon { visibility:hidden }
 
 .icon-btn{
   display:inline-flex; align-items:center; justify-content:center;
@@ -94,10 +93,6 @@ html:not(.theme-ready) #theme-toggle .icon { visibility:hidden }
 }
 .icon-btn:hover{ filter:brightness(0.96); transform:translateY(-1px) }
 .icon-btn:active{ transform:translateY(0) }
-
-#theme-toggle .icon{ display:none }
-html[data-theme="light"] #theme-toggle .sun{ display:block }
-html[data-theme="dark"]  #theme-toggle .moon{ display:block }
 
 @media (prefers-reduced-motion:no-preference){
   :root{ --_dur:160ms }
@@ -133,7 +128,6 @@ html[data-theme="dark"]  .social-rail{ color:color-mix(in oklab, var(--accent) 7
 /* =========================
    Selected Work (Master/Detail)
    ========================= */
-/* Section chroming (kept minimal) */
 .selected-work{ padding:6rem 0 }
 .section-header{ text-align:center; margin-bottom:2.5rem }
 .section-header h2{ font-size:2.5rem; font-weight:700; margin:0 0 1rem }
@@ -180,8 +174,7 @@ html[data-theme="dark"]  .social-rail{ color:color-mix(in oklab, var(--accent) 7
   flex:0 0 auto; min-width:320px; scroll-snap-align:start;
 }
 
-/* --- OPEN MODE (exactly one open): two-column master/detail) ---
-   Uses :has() to switch container layout without extra JS classes. */
+/* --- OPEN MODE (exactly one open): two-column master/detail) --- */
 @supports selector(:has(*)){
   @media (min-width:1024px){
     #work .project-stack:has(.project-card[open]){
@@ -189,11 +182,9 @@ html[data-theme="dark"]  .social-rail{ color:color-mix(in oklab, var(--accent) 7
       grid-template-columns: minmax(420px, 1fr) minmax(280px, 420px);
       align-items:start; gap:1.5rem; overflow:visible;
     }
-    /* Default all cards to the right column (stack) */
     #work .project-stack:has(.project-card[open]) .project-card{
       grid-column:2; min-width:auto;
     }
-    /* The open card becomes the left detail pane */
     #work .project-stack:has(.project-card[open]) .project-card[open]{
       grid-column:1; grid-row:1;
       border-color:color-mix(in oklab, var(--brand), transparent 60%);
@@ -204,7 +195,6 @@ html[data-theme="dark"]  .social-rail{ color:color-mix(in oklab, var(--accent) 7
 
 /* --- Mobile/tablet fallback --- */
 @media (max-width:1023.98px){
-  /* Keep horizontal rail when closed; when open, fall back to vertical accordion */
   #work .project-stack:has(.project-card[open]){
     display:block; overflow:visible;
   }
@@ -213,4 +203,85 @@ html[data-theme="dark"]  .social-rail{ color:color-mix(in oklab, var(--accent) 7
   }
 }
 
+/* =========================
+   Bookshelf Carousel (unified)
+   ========================= */
+
+/* Align with section layout; arrows overlay the viewport */
+.bookshelf-rail{
+  position: relative;
+  overflow: visible; /* allow overlay arrows to spill if needed */
+}
+
+/* Scrolling viewport (can be the scroller) */
+.bookshelf .carousel{
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+/* Horizontal list/track */
+.carousel__track{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:1rem;
+  list-style:none;
+  margin:0;
+  padding:0 2.25rem; /* space so arrows don’t cover covers */
+}
+
+/* Each slide = fixed-size card */
+.carousel__slide{ flex:0 0 auto; }
+.book{ display:block; text-decoration:none; }
+.book__figure{ position:relative; margin:0; }
+.book__cover{
+  display:block; width:144px; height:216px; object-fit:cover;
+  border-radius:.5rem; border:1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.book:hover .book__cover{ transform:translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.18); }
+.book__badge{
+  position:absolute; top:.5rem; left:.5rem;
+  padding:.25rem .5rem; font-size:.75rem; line-height:1; border-radius:.375rem;
+  background:var(--brand); color:var(--bg);
+  box-shadow: var(--shadow);
+}
+
+/* Overlay arrows (stroke SVGs, no border) */
+.carousel-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  inline-size:32px; block-size:32px;
+  display:grid; place-items:center;
+  background:transparent; border:none; padding:0;
+  color:var(--muted); z-index:2; cursor:pointer;
+  transition: transform .08s ease, opacity .12s ease, color .12s ease;
+}
+.carousel-arrow.prev{ left:.25rem; }
+.carousel-arrow.next{ right:.25rem; }
+.carousel-arrow:hover{ transform:translateY(-1px); color:var(--text); }
+.carousel-arrow:focus{ outline:none; }
+.carousel-arrow:focus-visible{
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--brand) 40%, transparent);
+  border-radius:.5rem;
+}
+.carousel-arrow.is-disabled{ opacity:0; pointer-events:none; }
+
+/* Optional: pretty scrollbar for horizontal track (desktop) */
+.carousel__track::-webkit-scrollbar{ height:8px; }
+.carousel__track::-webkit-scrollbar-thumb{ background:var(--border); border-radius:999px; }
+
+/* Motion preference */
+@media (prefers-reduced-motion: reduce){
+  .book__cover{ transition:none; }
+}
+
+/* Theme toggle button (leave as-is) */
+#theme-toggle {
+  border-color: transparent;
+  background: transparent;
+}
 

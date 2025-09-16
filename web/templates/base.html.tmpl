@@ -33,7 +33,7 @@
 
       <nav class="nav-links nav-dir" aria-label="Primary">
         <a href="/#projects">projects/</a>
-        <a href="/#bookshelf">bookshelf/</a>
+        <a href="/#books">books/</a>
         <a href="/#about">about/</a>
         <a href="/blog">blog/</a>
 
@@ -100,7 +100,7 @@
     <div class="container">© {{.Year}} {{.Site.Name}} — {{.Site.Footer.Note}}</div>
   </footer>
 
-  {{range .Site.Head.Scripts}}<script src="{{.}}" defer></script>{{end}}
+  {{range .Site.Head.Scripts}}<script type="module" src="{{.}}"></script>{{end}}
 </body>
 </html>
 {{end}}

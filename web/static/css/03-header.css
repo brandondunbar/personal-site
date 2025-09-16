@@ -1,9 +1,11 @@
-/* Header / Navbar */
+/* 03-header.css — Header / Navbar (drop-in) */
+
+/* ===== Header bar ===== */
 .site-header{
   position: sticky; top: 0; z-index: 10;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: none; /* keep crisp; add blur if you want later */
+  backdrop-filter: none;
 }
 .site-header .container{
   height: 56px;
@@ -11,7 +13,7 @@
   gap: 1rem;
 }
 
-/* Right-justify the link group; logo stays on the left */
+/* Right-justify the link group; logo stays left */
 .site-header nav{
   margin-left: auto;
   display: flex; align-items: center;
@@ -22,71 +24,110 @@
   line-height: 1;
 }
 
-/* Terminal-style logo (static, no typing/cursor) */
+/* ===== Logo ===== */
 .site-header .logo{
   font-family: var(--mono);
   font-size: 1.05rem;
   letter-spacing: .2px;
   display: inline-flex; align-items: center; gap: .4ch;
-  color: var(--nav-logo);            /* neutral logo color */
+  color: var(--nav-logo);
   text-decoration: none;
 }
-.logo__prompt{ color: var(--nav-fg); user-select: none; } /* dev@ + :~$ in accent */
-
-/* Header links */
-.site-header nav a{
-  color: var(--nav-fg);
-  text-decoration: none;
-  padding: 4px 6px;                  /* enables soft hover chip */
-  margin: 0;
-  border-radius: 6px;
-}
-.site-header nav a:hover{
-  color: var(--text);
-  background: var(--tint-blue);      /* soft, modern hover */
-  text-decoration: none;
-}
-
-/* Icon link (GitHub) — icon only, no hover effect */
-.icon{ width: 18px; height: 18px; vertical-align: middle; display: inline-block; }
-.nav-ico{
-  color: var(--nav-fg);
-  display: inline-flex; align-items: center;
-  padding: 0; margin-left: 1rem;
-  opacity: 1;
-}
-.nav-ico .icon{ width: 20px; height: 20px; }
-.nav-ico:hover{ color: var(--nav-fg); opacity: 1; } /* identical hover */
-
-/* Emphasize the name in the terminal logo */
+.logo__prompt{ color: var(--nav-fg); user-select: none; }
 .logo__user{ opacity: .85; font-weight: 500; }
-.logo__name{
-  font-weight: 750;
-  letter-spacing: .1px;
-}
+.logo__name{ font-weight: 750; letter-spacing: .1px; }
 
-/* Tiny brightness lift for the name on dark bars */
+/* Tiny brightness lift for the name on dark bars (if supported) */
 @supports (color: color-mix(in oklab, black, white)){
   .logo__name{
     color: color-mix(in oklab, var(--nav-logo) 88%, white 12%);
   }
 }
 
-#theme-toggle {
-  inline-size: 40px; 
-  block-size: 40px;
-  display: inline-grid;
-  place-items: center;
+/* ===== Header links ===== */
+.site-header nav a{
+  color: var(--nav-fg);
+  text-decoration: none;
+  padding: 4px 6px;
+  margin: 0;
+  border-radius: 6px;
+  transition: background .15s ease, color .15s ease;
+}
+.site-header nav a:hover{
+  color: var(--text);
+  background: var(--tint-blue);
+  text-decoration: none;
+}
+.site-header nav a:focus-visible{
+  outline: 2px solid color-mix(in oklab, var(--brand, #6aa7ff) 70%, white 30%);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
-#theme-toggle .icon {
-  position: absolute;
-  inset: 0;
-  margin: auto;
+/* ===== Icon base ===== */
+.icon{
+  width: 18px; height: 18px;
+  vertical-align: middle;
+  display: inline-block;
+}
+.nav-ico{
+  color: var(--nav-fg);
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0; margin-left: 1rem;
+  line-height: 1;
+}
+.nav-ico .icon{ width: 20px; height: 20px; }
+.nav-ico:hover{ color: var(--nav-fg); }
+
+/* ===== Theme toggle button ===== */
+.icon-btn{
+  background: none; border: none; padding: 0; margin: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--nav-fg);
+}
+.icon-btn:focus-visible{
+  outline: 2px solid color-mix(in oklab, var(--brand, #6aa7ff) 70%, white 30%);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
-#theme-toggle .sun { opacity: var(--sun-vis, 1); }
-#theme-toggle .moon { opacity: var(--moon-vis, 0); }
+/* Keep icons consistent size & alignment */
+#theme-toggle .icon{
+  width: 1.25rem; height: 1.25rem;
+  vertical-align: middle;
+}
 
+/* --- Icon visibility control ---
+   We SHOW exactly one icon via `display`, so the hidden one
+   is removed from layout/hit-testing (no accidental clicks). */
 
+/* Base: hide both; state rules below will enable exactly one */
+#theme-toggle .sun,
+#theme-toggle .moon { display: none; }
+
+/* Prefer data-theme (set on <html>) */
+html[data-theme="light"] #theme-toggle .moon { display: inline-block; }
+html[data-theme="light"] #theme-toggle { color: var(--nav-fg); }
+
+html[data-theme="dark"]  #theme-toggle .sun  { display: inline-block; }
+html[data-theme="dark"]  #theme-toggle { color: var(--nav-fg); }
+
+/* Fallback: use aria-pressed if someone removes data-theme
+   (your JS sets aria-pressed=true when dark is active) */
+#theme-toggle[aria-pressed="false"] .moon { display: inline-block; } /* light */
+#theme-toggle[aria-pressed="true"]  .sun  { display: inline-block; } /* dark */
+
+/* Smooth fade when swapping themes (respects reduced motion) */
+@media (prefers-reduced-motion: no-preference){
+  #theme-toggle .icon { transition: opacity .18s ease; }
+  /* We still use display to fully hide the inactive icon; the fade helps
+     the active one feel a bit smoother when it appears. */
+}
+
+/* High-contrast mode safeguards */
+@media (forced-colors: active){
+  .site-header{ border-bottom: 1px solid CanvasText; }
+  .icon-btn:focus-visible{ outline-color: Highlight; }
+}
 

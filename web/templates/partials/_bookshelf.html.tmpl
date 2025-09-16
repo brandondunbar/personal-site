@@ -1,0 +1,58 @@
+{{- define "bookshelf" -}}
+<section id="books" class="section books">
+  <div class="container">
+    <header class="section-head">
+      <h2 class="eyebrow" id="{{ .ID }}-title">{{ or .Title "Books" }}</h2>
+    </header>
+
+    <div class="bookshelf-rail">
+      <button class="carousel-arrow prev"
+              data-carousel-prev="{{ .ID }}"
+              aria-label="Scroll books left"
+              type="button">
+        <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="bookshelf">
+        <div class="carousel js-carousel"
+             id="{{ .ID }}"
+             tabindex="0"
+             role="group"
+             aria-roledescription="carousel"
+             aria-label="{{ or .Title "Books carousel" }}">
+          <ul class="carousel__track" role="list">
+            {{- range .Books }}
+            <li class="carousel__slide" role="listitem">
+              <a class="book" href="{{ .URL }}" aria-label="{{ .Title }} by {{ .Author }}">
+                <figure class="book__figure">
+                  <img class="book__cover"
+                       src="{{ .Cover }}"
+                       alt="{{ .Title }} cover"
+                       loading="lazy"
+                       decoding="async" />
+                  {{- if .IsReading }}
+                  <figcaption class="book__badge" aria-label="Currently reading">Reading</figcaption>
+                  {{- end }}
+                </figure>
+              </a>
+            </li>
+            {{- end }}
+          </ul>
+        </div>
+      </div>
+
+      <button class="carousel-arrow next"
+              data-carousel-next="{{ .ID }}"
+              aria-label="Scroll books right"
+              type="button">
+        <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+{{- end }}
+
