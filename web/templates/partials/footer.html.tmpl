@@ -1,0 +1,45 @@
+{{- define "footer" -}}
+<footer class="site-footer">
+  <div class="container">
+    <hr class="hr" />
+
+    <div class="footer-content">
+      <div class="footer-note">
+        <p>© <span id="year">{{.Year}}</span> {{.Site.Name}}</p>
+        <p>{{.Site.Footer.Note}}</p>
+      </div>
+
+      {{- $L := or .Site.Links .Config.Links -}}
+      {{- if $L }}
+      <div class="footer-socials">
+        {{ with $L.GitHub }}
+        <a href="{{ . }}" class="footer-social-link" aria-label="GitHub profile"> {{/* <--- Class changed */}}
+          <span class="sr-only">GitHub</span>
+          {{ template "icon-GitHub" $ }}
+        </a>
+        {{ end }}
+        {{ with $L.LinkedIn }}
+        <a href="{{ . }}" class="footer-social-link" aria-label="LinkedIn profile"> {{/* <--- Class changed */}}
+          <span class="sr-only">LinkedIn</span>
+          {{ template "icon-LinkedIn" $ }}
+        </a>
+        {{ end }}
+        {{ with $L.LeetCode }}
+        <a href="{{ . }}" class="footer-social-link" aria-label="LeetCode profile"> {{/* <--- Class changed */}}
+            <span class="sr-only">LeetCode</span>
+            {{ template "icon-LeetCode" $ }}
+        </a>
+        {{ end }}
+        {{ with $L.CV }}
+        <a href="{{ . }}" class="footer-social-link" aria-label="Download CV"> {{/* <--- Class changed */}}
+          <span class="sr-only">CV</span>
+          {{ template "icon-CV" $ }}
+        </a>
+        {{ end }}
+      </div>
+      {{- end }}
+    </div>
+  </div>
+</footer>
+{{- end }}
+

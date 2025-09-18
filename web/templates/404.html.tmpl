@@ -1,19 +1,16 @@
+{{/* web/templates/404.html.tmpl */}}
+
+{{define "notfound/title"}}Not Found — {{.Site.Name}}{{end}}
+
 {{define "notfound"}}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Not Found — {{.Site.Name}}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <main class="container" style="padding:2rem">
-    <h1>404 — Page not found</h1>
-    <p>Sorry, we couldn’t find that page.</p>
-    <p><a href="/">← Back to home</a></p>
-    <footer style="margin-top:2rem;opacity:.7">© {{.Year}} {{.Site.Name}}</footer>
-  </main>
-</body>
-</html>
+  {{template "base-header" .}}
+  <div class="container" style="min-height: 60vh; display: grid; place-content: center; text-align: center;">
+    <div>
+      <h1 style="font-size: 2.5rem;">404 — Page not found</h1>
+      <p class="subhead" style="margin-block: 1rem 2rem;">Sorry, we couldn’t find the page you were looking for.</p>
+      <a href="/" class="btn">Home</a>
+    </div>
+  </div>
+  {{template "base-footer" .}}
 {{end}}
 

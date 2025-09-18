@@ -14,23 +14,14 @@ function whenImagesReady(container, cb) {
   });
 }
 
-function pickScroller(root, track) {
-  // Prefer whichever actually overflows horizontally
-  if (track.scrollWidth > track.clientWidth + 1) return track;
-  if (root.scrollWidth  > root.clientWidth  + 1) return root;
-  return (root.scrollWidth > track.scrollWidth) ? root : track;
-}
-
 function attachCarousel(targetId) {
-  const rootEl  = document.getElementById(targetId);           // .carousel
+  const rootEl  = document.getElementById(targetId);           // .carousel (the ONLY scroller)
   if (!rootEl) return;
-  const trackEl = rootEl.querySelector('.carousel__track');     // <ul>
+  const trackEl = rootEl.querySelector('.carousel__track');     // <ul> (content row)
   if (!trackEl) return;
 
   const prevBtn = document.querySelector(`[data-carousel-prev="${targetId}"]`);
   const nextBtn = document.querySelector(`[data-carousel-next="${targetId}"]`);
-
-  let scroller = pickScroller(rootEl, trackEl);
 
   const setHidden = (btn, hidden) => {
     if (!btn) return;
@@ -39,12 +30,15 @@ function attachCarousel(targetId) {
     btn.tabIndex = hidden ? -1 : 0;
   };
 
+  // Small tolerance to handle subpixel scroll values and rounding
+  const EPS = 1.5;
+
   const measure = () => {
-    scroller = pickScroller(rootEl, trackEl);
-    const maxScroll = Math.max(0, scroller.scrollWidth - scroller.clientWidth - 1);
-    const atStart   = scroller.scrollLeft <= 0;
-    const atEnd     = scroller.scrollLeft >= maxScroll;
-    const noOverflow = maxScroll <= 0;
+    const maxScroll = Math.max(0, rootEl.scrollWidth - rootEl.clientWidth - 1);
+    const atStart   = rootEl.scrollLeft <= EPS;
+    const atEnd     = rootEl.scrollLeft >= (maxScroll - EPS);
+    const noOverflow = maxScroll <= EPS;
+
     setHidden(prevBtn, noOverflow || atStart);
     setHidden(nextBtn, noOverflow || atEnd);
   };
@@ -58,23 +52,19 @@ function attachCarousel(targetId) {
   };
 
   const scrollByCards = (n) => {
-    scroller.scrollBy({ left: stepSize() * n, behavior: 'smooth' });
+    rootEl.scrollBy({ left: stepSize() * n, behavior: 'smooth' });
   };
 
+  // Click handlers
   prevBtn?.addEventListener('click', () => scrollByCards(-3));
   nextBtn?.addEventListener('click', () => scrollByCards(+3));
 
+  // Keep arrow state in sync
   const onScroll = () => measure();
-  const rebindScrollListener = () => {
-    scroller.removeEventListener?.('scroll', onScroll);
-    scroller = pickScroller(rootEl, trackEl);
-    scroller.addEventListener('scroll', onScroll, { passive: true });
-  };
+  rootEl.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', measure);
 
-  rebindScrollListener();
-  window.addEventListener('resize', () => { rebindScrollListener(); measure(); });
-
-  // Keyboard when carousel has focus
+  // Keyboard support when the carousel has focus
   rootEl.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
       e.preventDefault();
@@ -82,16 +72,42 @@ function attachCarousel(targetId) {
     }
   });
 
-  const ro = new ResizeObserver(() => { rebindScrollListener(); measure(); });
+  // Make vertical wheel/trackpad gestures scroll horizontally (while scrollbar is hidden)
+  rootEl.addEventListener('wheel', (e) => {
+    // Ignore pinch-zoom (ctrlKey) and gestures already mostly horizontal
+    if (e.ctrlKey) return;
+    const absX = Math.abs(e.deltaX);
+    const absY = Math.abs(e.deltaY);
+    if (absY > absX && absY > 0) {
+      // Translate vertical delta to horizontal scroll
+      rootEl.scrollBy({ left: e.deltaY, behavior: 'auto' });
+      e.preventDefault(); // allow smooth native feel; keep passive: false
+    }
+  }, { passive: false });
+
+  // Recompute on size/content changes
+  const ro = new ResizeObserver(() => measure());
   ro.observe(rootEl);
   ro.observe(trackEl);
 
-  const mo = new MutationObserver(() => { rebindScrollListener(); measure(); });
+  const mo = new MutationObserver(() => measure());
   mo.observe(trackEl, { childList: true, subtree: true });
 
-  whenImagesReady(trackEl, () => { rebindScrollListener(); measure(); });
-  requestAnimationFrame(() => { rebindScrollListener(); measure(); });
-  window.addEventListener('load', () => { rebindScrollListener(); measure(); });
+  // Wait for images, then measure; also measure on next frame and on window load
+  whenImagesReady(trackEl, measure);
+  requestAnimationFrame(measure);
+  window.addEventListener('load', measure);
+
+  // Optional cleanup handle if needed later
+  return () => {
+    prevBtn?.removeEventListener('click', scrollByCards);
+    nextBtn?.removeEventListener('click', scrollByCards);
+    rootEl.removeEventListener('scroll', onScroll);
+    window.removeEventListener('resize', measure);
+    window.removeEventListener('load', measure);
+    ro.disconnect();
+    mo.disconnect();
+  };
 }
 
 export function initCarousels() {

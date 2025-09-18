@@ -1,74 +1,51 @@
-{{define "content"}}
-{{/* Pull hero from site config; provide safe defaults */}}
-{{- $H := .Site.Hero -}}
-{{- $Eyebrow := or .Site.Tagline "Robust. Modular. Readable." -}}
+{{/* web/templates/home.html.tmpl */}}
 
-<section class="hero">
-  <!-- Decorative background SVG -->
-  <svg class="hero-bg" viewBox="0 0 1600 900" aria-hidden="true" focusable="false" role="img">
-    <defs>
-      <pattern id="hero-grid" width="48" height="48" patternUnits="userSpaceOnUse">
-        <path d="M48 0H0V48" fill="none" stroke="currentColor" stroke-opacity=".12"/>
-      </pattern>
-      <linearGradient id="hero-accent" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%"  stop-color="var(--accent)" stop-opacity=".9"/>
-        <stop offset="100%" stop-color="var(--accent-600)" stop-opacity=".7"/>
-      </linearGradient>
-    </defs>
+{{define "home/title"}}Home — {{.Site.Name}}{{end}}
 
-    <!-- Blueprint grid -->
-    <rect width="1600" height="900" fill="url(#hero-grid)"/>
+{{define "home"}}
+  {{template "base-header" .}}
 
-    <!-- ===== Circle ===== -->
-    {{ template "circle" . }}
+  {{/* === Home content starts here === */}}
+  {{- $H := .Site.Hero -}}
+  {{- $Eyebrow := or .Site.Tagline "Robust. Modular. Readable." -}}
 
-    <!-- ===== PCB-style traces ===== -->
-    {{ template "traces" . }}
+  <section class="hero">
+    <svg class="hero-bg" viewBox="0 0 1600 900" aria-hidden="true" focusable="false" role="img">
+      <defs>
+        <pattern id="hero-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+          <path d="M48 0H0V48" fill="none" stroke="currentColor" stroke-opacity=".12"/>
+        </pattern>
+        <linearGradient id="hero-accent" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"  stop-color="var(--accent)" stop-opacity=".9"/>
+          <stop offset="100%" stop-color="var(--accent-600)" stop-opacity=".7"/>
+        </linearGradient>
+      </defs>
+      <rect width="1600" height="900" fill="url(#hero-grid)"/>
+      {{ template "circle" . }}
+      {{ template "traces" . }}
+      {{ template "tri_anim" . }}
+      {{ template "hex_anim" . }}
+    </svg>
 
-    <!-- ===== Triangle Animation ===== -->
-    {{ template "tri_anim" . }}
-
-    <!-- ===== Hexagon Animation ===== -->
-    {{ template "hex_anim" . }}
-  </svg>
-
-  <!-- Content -->
-  <div class="hero-inner container">
-    {{- with $Eyebrow }}<p class="eyebrow">{{ . }}</p>{{ end }}
-
-    <h1>
-      {{- with $H.Title -}}
-        {{ . }}
-      {{- else -}}
-        Software Engineer.
-      {{- end -}}
-    </h1>
-
-    <p class="subhead">
-      {{- with $H.Lede -}}
-        {{ . }}
-      {{- else -}}
-        Python, Go, and C++.
-      {{- end -}}
-    </p>
-
-    <div class="hero-cta">
-      {{- with $H.Actions -}}
-        {{- range . }}
-          <a href="{{ .Href }}" class="{{ .Class }}">{{ .Label }}</a>
+    <div class="hero-inner container">
+      {{- with $Eyebrow }}<p class="eyebrow">{{ . }}</p>{{ end }}
+      <h1>{{ or $H.Title "Software Engineer." }}</h1>
+      <p class="subhead">{{ or $H.Lede "Python, Go, and C++." }}</p>
+      <div class="hero-cta">
+        {{- with $H.Actions -}}
+          {{- range . }}<a href="{{ .Href }}" class="{{ .Class }}">{{ .Label }}</a>{{- end }}
+        {{- else -}}
+          <a href="#work" class="btn">See selected work</a>
+          <a href="#contact" class="btn btn--ghost">Get in touch</a>
         {{- end }}
-      {{- else -}}
-        <a href="#work" class="btn">See selected work</a>
-        <a href="#contact" class="btn btn--ghost">Get in touch</a>
-      {{- end }}
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-{{/* Selected Work — partial expects a Work object as root */}}
-{{ template "partials/project-cards" .Site.Work }}
+  {{ template "partials/project-cards" .Site.Work }}
+  {{ template "bookshelf" .Site.Bookshelf }}
+  {{ template "about" . }}
 
-{{ template "bookshelf" .Site.Bookshelf }}
-
+  {{template "base-footer" .}}
 {{end}}
 

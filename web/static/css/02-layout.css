@@ -1,4 +1,8 @@
-.container{width:min(1100px,92%);margin-inline:auto}
+.container{
+  width:min(1100px,92%);
+  margin-inline:auto;
+  flex-grow: 1;
+}
 .section{padding:var(--s-6) 0}
 .section--alt{
   background:var(--bg-alt);
@@ -25,8 +29,9 @@
 
 /* Section titles */
 .section h2{
-  font-size:clamp(22px,3.2vw,30px);
-  margin:0 0 16px;
+  font-size: 2.5rem; 
+  font-weight: 700; 
+  margin: 0 0 1rem;
   letter-spacing:.2px
 }
 
@@ -40,5 +45,71 @@
     transparent
   );
   opacity:.45;
+}
+
+/* =========================
+   Site Footer
+   ========================= */
+.site-footer {
+  padding: var(--s-4) 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.site-footer .hr {
+  margin-block: 0 var(--s-4);
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.footer-note p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.footer-socials {
+  display: flex;
+  gap: var(--s-1);
+  margin-left: auto; /* Pushes to the right */
+}
+
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: var(--social-icon-color); /* <-- CHANGE THIS LINE from var(--muted) */
+  transition: color .15s ease, background-color .15s ease;
+}
+
+.footer-social-link:hover {
+  color: var(--text); /* On hover, brighten to primary text color */
+  background: var(--tint-blue);
+}
+
+.footer-social-link svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.6; /* <-- FIX 1: Match the social rail's stroke width */
+}
+
+/* On smaller screens, stack the elements */
+@media (max-width: 640px) {
+  .footer-content {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  .footer-socials {
+    margin-left: 0;
+  }
 }
 

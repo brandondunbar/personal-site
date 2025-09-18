@@ -121,118 +121,147 @@
 .social-rail svg{ width:24px !important; height:24px !important; stroke-width:1.6; display:block; flex:0 0 auto }
 .social-rail a:hover{ transform:translateY(-2px); filter:drop-shadow(0 2px 6px rgba(0,0,0,.25)) }
 .social-rail a:focus-visible{ outline:2px solid var(--ring); outline-offset:3px; border-radius:8px }
-html[data-theme="light"] .social-rail{ color:color-mix(in oklab, var(--accent) 70%, #c6a96a 30%) }
-html[data-theme="dark"]  .social-rail{ color:color-mix(in oklab, var(--accent) 70%, #f6ebc8 30%) }
+.social-rail {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  color: var(--social-icon-color);
+  pointer-events: auto;
+}
 @media (max-width:840px){ .social-rail{ display:none } }
 
 /* =========================
-   Selected Work (Master/Detail)
+   Selected Work (Projects)  <-- Change #work to #projects everywhere below
    ========================= */
-.selected-work{ padding:6rem 0 }
-.section-header{ text-align:center; margin-bottom:2.5rem }
-.section-header h2{ font-size:2.5rem; font-weight:700; margin:0 0 1rem }
-.section-lede{ font-size:1.125rem; color:var(--muted); max-width:60ch; margin:0 auto; line-height:1.6 }
+
+.selected-work { padding: 6rem 0; }
+.section-header { margin-bottom: 2.5rem; }
+.section-header h2 { font-size: 2.5rem; font-weight: 700; margin: 0 0 1rem; }
+.section-lede { font-size: 1.125rem; color: var(--muted); max-width: 60ch; margin: 0 auto; line-height: 1.6; }
 
 /* --- Base card appearance --- */
-#work .project-card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  box-shadow:var(--shadow);
-  overflow:hidden;
+#projects .project-card { /* <-- CORRECTED */
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
   transition: box-shadow .15s ease, transform .12s ease, border-color .15s ease;
 }
-#work .project-card:hover{ transform:translateY(-1px); box-shadow:0 14px 32px rgba(0,0,0,.35) }
-#work .project-summary{
-  list-style:none; padding:1rem;
-  display:flex; align-items:flex-start; justify-content:space-between; gap:.75rem; cursor:pointer;
-}
-#work .project-summary::-webkit-details-marker{ display:none }
-#work .project-title{ margin:0 0 .45rem; font-size:1.05rem; line-height:1.25; word-break:break-word; hyphens:auto }
-#work .tech-list{ display:flex; flex-wrap:wrap; gap:.4rem; margin:0; padding:0; list-style:none }
-#work .chevron{
-  inline-size:1rem; block-size:1rem; background:var(--text);
-  mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>') center/contain no-repeat;
-  transition:transform .18s ease; margin-top:.25rem;
-}
-#work .project-card[open] .chevron{ transform:rotate(180deg) }
-#work .project-body{ display:none; padding:0 1rem 1rem; border-top:1px dashed var(--border) }
-#work .project-card[open] .project-body{ display:block }
-#work .project-blurb{ margin:.75rem 0; color:var(--muted); line-height:1.5 }
-#work .highlights{ margin:.5rem 0 .5rem 1.25rem }
-#work .gallery{ display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:.75rem; margin:.5rem 0 }
-#work .gallery img{ display:block; width:100%; height:140px; object-fit:cover; border-radius:10px; border:1px solid var(--border) }
-#work .actions{ margin-top:.5rem; display:flex; gap:.5rem; flex-wrap:wrap }
-#work .actions .is-disabled{ opacity:.6; pointer-events:none }
 
-/* --- CLOSED MODE (no card open): horizontal row --- */
-#work .project-stack{
-  display:flex; gap:1rem; overflow-x:auto; padding-bottom:.25rem;
-  scroll-snap-type:x mandatory;
-}
-#work .project-stack .project-card{
-  flex:0 0 auto; min-width:320px; scroll-snap-align:start;
+#projects .project-card:hover { /* <-- CORRECTED */
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(0,0,0,.35);
 }
 
-/* --- OPEN MODE (exactly one open): two-column master/detail) --- */
-@supports selector(:has(*)){
-  @media (min-width:1024px){
-    #work .project-stack:has(.project-card[open]){
-      display:grid;
-      grid-template-columns: minmax(420px, 1fr) minmax(280px, 420px);
-      align-items:start; gap:1.5rem; overflow:visible;
-    }
-    #work .project-stack:has(.project-card[open]) .project-card{
-      grid-column:2; min-width:auto;
-    }
-    #work .project-stack:has(.project-card[open]) .project-card[open]{
-      grid-column:1; grid-row:1;
-      border-color:color-mix(in oklab, var(--brand), transparent 60%);
-      position:sticky; top:.75rem;
-    }
+#projects .project-summary { /* <-- CORRECTED */
+  list-style: none; padding: 1rem;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; cursor: pointer;
+}
+#projects .project-summary::-webkit-details-marker { display: none; }
+#projects .project-title { margin: 0 0 .45rem; font-size: 1.05rem; line-height: 1.25; word-break: break-word; hyphens: auto; }
+#projects .tech-list { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+#projects .chevron {
+  flex-shrink: 0;
+  inline-size: 1rem; block-size: 1rem; background: var(--text);
+  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>') center/contain no-repeat;
+  transition: transform .18s ease; margin-top: .25rem;
+}
+#projects .project-card[open] .chevron { transform: rotate(180deg); }
+#projects .project-body { display: none; padding: 0 1rem 1rem; border-top: 1px dashed var(--border); }
+#projects .project-card[open] .project-body { display: block; }
+#projects .project-blurb { margin: .75rem 0; color: var(--muted); line-height: 1.5; }
+#projects .highlights { margin: .5rem 0 .5rem 1.25rem; }
+#projects .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .75rem; margin: .5rem 0; }
+#projects .gallery img { display: block; width: 100%; height: 140px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
+#projects .actions { margin-top: .5rem; display: flex; gap: .5rem; flex-wrap: wrap; }
+#projects .actions .is-disabled { opacity: .6; pointer-events: none; }
+
+/* --- GRID LOGIC --- */
+
+/*
+ * 1. Resting State: Default to a 3-column grid.
+ *    This is our baseline layout for the component.
+ */
+#projects .project-stack {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  transition: grid-template-columns 0.4s ease-in-out;
+}
+
+/*
+ * 2. Viewing State: When a card is open (.has-open is present),
+ *    switch to the 2-column master/detail layout.
+ *    This only applies on larger screens.
+ */
+@media (min-width: 1024px) {
+  #projects .project-stack.has-open {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  /* Target only the open card and move it to the left column. */
+  #projects .project-stack.has-open .project-card[open] {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+    position: sticky;
+    top: 1.5rem;
+    border-color: color-mix(in oklab, var(--brand), transparent 60%);
+  }
+
+  /* Target only the INACTIVE cards and move them to the right column. */
+  #projects .project-stack.has-open .project-card:not([open]) {
+    grid-column: 2 / 3;
   }
 }
 
-/* --- Mobile/tablet fallback --- */
-@media (max-width:1023.98px){
-  #work .project-stack:has(.project-card[open]){
-    display:block; overflow:visible;
-  }
-  #work .project-stack:has(.project-card[open]) .project-card{
-    display:block; min-width:auto;
+/*
+ * 3. Responsive Fallback: On smaller screens, always stack vertically.
+ *    This rule has the highest precedence on small viewports.
+ */
+@media (max-width: 1023.98px) {
+  #projects .project-stack {
+    grid-template-columns: 1fr;
   }
 }
 
 /* =========================
-   Bookshelf Carousel (unified)
+   Bookshelf Carousel (Option B: overlay arrows; .carousel is the scroller)
    ========================= */
 
-/* Align with section layout; arrows overlay the viewport */
+/* Rail hosts the viewport + overlay arrows */
 .bookshelf-rail{
   position: relative;
   overflow: visible; /* allow overlay arrows to spill if needed */
+  /* Prevent rail from intercepting events outside arrows */
+  pointer-events: none;
 }
 
-/* Scrolling viewport (can be the scroller) */
+/* Scrolling viewport (the ONLY horizontal scroller) */
 .bookshelf .carousel{
   position: relative;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
+  /* Hide native scrollbar (keep functionality) */
+  scrollbar-width: none;              /* Firefox */
 }
+.bookshelf .carousel::-webkit-scrollbar{ display: none; } /* WebKit */
 
-/* Horizontal list/track */
+/* Track: horizontal row; NOT a scroller */
 .carousel__track{
   display:flex;
   flex-wrap:nowrap;
   gap:1rem;
   list-style:none;
   margin:0;
-  padding:0 2.25rem; /* space so arrows don’t cover covers */
+  padding:0 2.5rem; /* reserve space so arrows never cover the covers */
 }
 
-/* Each slide = fixed-size card */
-.carousel__slide{ flex:0 0 auto; }
+/* Slides / cards */
+.carousel__slide{ flex:0 0 auto; scroll-snap-align:start; }
 .book{ display:block; text-decoration:none; }
 .book__figure{ position:relative; margin:0; }
 .book__cover{
@@ -258,21 +287,20 @@ html[data-theme="dark"]  .social-rail{ color:color-mix(in oklab, var(--accent) 7
   display:grid; place-items:center;
   background:transparent; border:none; padding:0;
   color:var(--muted); z-index:2; cursor:pointer;
-  transition: transform .08s ease, opacity .12s ease, color .12s ease;
+  /* No movement on hover to avoid "wiggle" */
+  transition: opacity .12s ease, color .12s ease;
+  /* Allow clicks; rail has pointer-events:none */
+  pointer-events: auto;
 }
 .carousel-arrow.prev{ left:.25rem; }
 .carousel-arrow.next{ right:.25rem; }
-.carousel-arrow:hover{ transform:translateY(-1px); color:var(--text); }
+.carousel-arrow:hover{ color:var(--text); }
 .carousel-arrow:focus{ outline:none; }
 .carousel-arrow:focus-visible{
   box-shadow:0 0 0 3px color-mix(in srgb, var(--brand) 40%, transparent);
   border-radius:.5rem;
 }
 .carousel-arrow.is-disabled{ opacity:0; pointer-events:none; }
-
-/* Optional: pretty scrollbar for horizontal track (desktop) */
-.carousel__track::-webkit-scrollbar{ height:8px; }
-.carousel__track::-webkit-scrollbar-thumb{ background:var(--border); border-radius:999px; }
 
 /* Motion preference */
 @media (prefers-reduced-motion: reduce){

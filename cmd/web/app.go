@@ -25,6 +25,7 @@ type App struct {
 type TemplateData struct {
 	Site config.Config
 	Year int
+	Title string
 }
 
 func NewApp() (*App, error) {
@@ -42,6 +43,8 @@ func NewApp() (*App, error) {
 		templatePath("web/templates/partials/circle.html.tmpl"),
 		templatePath("web/templates/partials/_project-cards.html.tmpl"),
 		templatePath("web/templates/partials/_bookshelf.html.tmpl"),
+		templatePath("web/templates/partials/about.html.tmpl"),
+		templatePath("web/templates/partials/footer.html.tmpl"),
 	)
 	if err != nil {
 		return nil, err

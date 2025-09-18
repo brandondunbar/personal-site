@@ -45,6 +45,10 @@
   /* Navbar theming (terminal prompt + dirs) */
   --nav-fg:var(--accent);  /* color for prompt highlights & link hover */
   --nav-logo:var(--text);  /* logo text/icon; set to --nav-fg to accent it */
+  
+  /* Social Icon Color */
+  --social-icon-color: color-mix(in oklab, var(--accent) 70%, #f6ebc8 30%);
+
 }
 
 /* Light tokens activated by the toggle via <html data-theme="light"> */
@@ -72,10 +76,11 @@ html[data-theme="light"]{
   /* Light-mode nav */
   --nav-fg:var(--accent);
   --nav-logo:#0f141a;
+
+  --social-icon-color: color-mix(in oklab, var(--accent) 70%, #c6a96a 30%);
+
 }
 
-/* Optional: if NO user choice yet (no data-theme set),
-   honor the OS preference as a default. */
 @media (prefers-color-scheme: light){
   html:not([data-theme]){
     --bg:#f7fafc; --bg-alt:#ffffff; --surface:#ffffff; --border:#e6eaf0;
@@ -100,6 +105,8 @@ html[data-theme="light"]{
 
     --nav-fg:var(--accent);
     --nav-logo:#0f141a;
+
+    --social-icon-color: color-mix(in oklab, var(--accent) 70%, #c6a96a 30%);
   }
 }
 

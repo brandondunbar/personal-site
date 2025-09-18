@@ -10,6 +10,9 @@ body{
     var(--bg);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* Reserve space for the scrollbar so content doesn't jump */
@@ -30,10 +33,6 @@ footer {
   max-width: 100%;
   /* Avoid width:100vw on layout containers */
 }
-
-/* Optional: always show a vertical scrollbar (older workaround)
-   html { overflow-y: scroll; }  */
-
 
 /* Accessibility */
 :focus-visible{
